@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TestQuest Moderator Training & Certification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0E1420 0%, #1a2332 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00D4FF, #00FF88);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00D4FF, #00FF88);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            color: #0E1420;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3 {
+            color: #667eea;
+            font-size: 1.3rem;
+            margin: 25px 0 15px 0;
+        }
+
+        .policy-item {
+            background: #f8f9ff;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+        }
+
+        .dispute-type {
+            background: #fff5f5;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .question-card {
+            background: #f8f9ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .question-title {
+            font-weight: 600;
+            color: #0E1420;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option:hover {
+            background: #e6f3ff;
+        }
+
+        .option input {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .template-box {
+            background: #f0f8ff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .results {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .score-display {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .score-pass {
+            color: #22c55e;
+        }
+
+        .score-fail {
+            color: #ef4444;
+        }
+
+        .certification-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="timer" id="timer">⏱️ 5:00</div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ TestQuest Moderator Training</h1>
+            <p>5-Minute Certification Program - Learn to Handle Disputes with Neutrality</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div class="content">
+            <!-- Section 1: Overview -->
+            <div class="section active" id="section-1">
+                <h2>📋 Module 1: TestQuest Overview & Policies</h2>
+                <p><strong>🎯 Objective:</strong> Understand TestQuest's core mission and dispute resolution framework</p>
+
+                <h3>Key Platform Policies</h3>
+                <div class="policy-item">
+                    <strong>1. Neutrality First</strong> - Always remain impartial between testers and developers
+                </div>
+                <div class="policy-item">
+                    <strong>2. Evidence-Based Decisions</strong> - Only facts and provided evidence matter
+                </div>
+                <div class="policy-item">
+                    <strong>3. Clear Communication</strong> - Explain decisions with specific reasoning
+                </div>
+                <div class="policy-item">
+                    <strong>4. Timely Resolution</strong> - Handle disputes within 24-48 hours when possible
+                </div>
+                <div class="policy-item">
+                    <strong>5. Escalation Protocol</strong> - Know when to involve admins for complex cases
+                </div>
+
+                <h3>Common Dispute Types</h3>
+                <div class="dispute-type">
+                    <strong>Bug Rejection</strong> - Developer claims bug isn't valid
+                </div>
+                <div class="dispute-type">
+                    <strong>Unfair Payout</strong> - Tester believes reward is too low
+                </div>
+                <div class="dispute-type">
+                    <strong>Payment Delay</strong> - Bounty payment issues
+                </div>
+                <div class="dispute-type">
+                    <strong>Scope Disputes</strong> - Bug outside project testing areas
+                </div>
+            </div>
+
+            <!-- Section 2: Assessment Part 1 -->
+            <div class="section" id="section-2">
+                <h2>📝 Training Assessment - Part 1</h2>
+                <p style="margin-bottom: 20px; color: #666;">Answer all questions below. Questions are randomly selected from a pool of 25.</p>
+                <div id="questions-part-1"></div>
+            </div>
+
+            <!-- Section 3: Assessment Part 2 -->
+            <div class="section" id="section-3">
+                <h2>📝 Training Assessment - Part 2</h2>
+                <p style="margin-bottom: 20px; color: #666;">Complete the remaining questions to finish your assessment.</p>
+                <div id="questions-part-2"></div>
+            </div>
+
+            <!-- Section 4: Reference Guide -->
+            <div class="section" id="section-4">
+                <h2>🛠️ Quick Reference Guide</h2>
+
+                <h3>Moderator Dashboard Components</h3>
+                <div class="policy-item">
+                    <strong>Dispute Queue</strong> - Shows pending disputes by priority
+                </div>
+                <div class="policy-item">
+                    <strong>Evidence Panel</strong> - Screenshots, logs, reproduction steps
+                </div>
+                <div class="policy-item">
+                    <strong>Communication Panel</strong> - Message both parties
+                </div>
+                <div class="policy-item">
+                    <strong>Resolution Actions</strong> - Approve/Reject with reasoning
+                </div>
+                <div class="policy-item">
+                    <strong>Escalation Button</strong> - Send to admin when needed
+                </div>
+
+                <h3>Decision Framework</h3>
+                <div style="background: #f8f9ff; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                    <ol style="padding-left: 20px; line-height: 1.8;">
+                        <li>Review all evidence objectively</li>
+                        <li>Check if bug falls within project scope</li>
+                        <li>Verify reproduction steps are clear</li>
+                        <li>Assess severity level appropriateness</li>
+                        <li>Make decision with detailed explanation</li>
+                        <li>Document reasoning for audit trail</li>
+                    </ol>
+                </div>
+
+                <h3>Communication Templates</h3>
+
+                <h4>For Bug Validation:</h4>
+                <div class="template-box">
+"After reviewing the evidence provided, this appears to be a valid [severity] bug because [specific reasoning]. The reproduction steps are clear and the issue falls within the stated project scope."
+                </div>
+
+                <h4>For Bug Rejection:</h4>
+                <div class="template-box">
+"Based on the evidence review, this does not qualify as a bug because [specific reasoning]. This appears to be [expected behavior/user error/outside scope] as outlined in the project requirements."
+                </div>
+
+                <h4>For Payment Disputes:</h4>
+                <div class="template-box">
+"The payout amount of $[X] aligns with the stated bounty structure for [severity] bugs as defined in the project terms. The calculation is: [show breakdown]."
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="section" id="results">
+                <div class="results">
+                    <h2>🎯 Training Complete!</h2>
+                    <div class="score-display" id="score-display">0%</div>
+                    <div id="result-message"></div>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <button class="btn btn-secondary" id="prevBtn" onclick="changeSection(-1)">← Previous</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="changeSection(1)">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        let totalSections = 4;
+        let startTime = Date.now();
+        let timerInterval;
+
+        // Question pool (25 questions total)
+        const questionPool = [
+            {
+                id: 1,
+                text: "What are TestQuest's 3 main user roles?",
+                options: [
+                    "Tester, Developer, Admin",
+                    "Tester, Developer, Moderator",
+                    "Tester, Developer, Manager",
+                    "All of the above"
+                ],
+                correct: 1
+            },
+            {
+                id: 2,
+                text: "A developer rejects a critical bug claiming 'this is user error, not a bug.' What's your first step?",
+                options: [
+                    "Immediately side with the tester",
+                    "Ask for reproduction steps and evidence",
+                    "Close the dispute as invalid",
+                    "Escalate to admin immediately"
+                ],
+                correct: 1
+            },
+            {
+                id: 3,
+                text: "A tester messages you privately saying 'the developer is being unfair, please help me win this dispute.' How do you respond?",
+                options: [
+                    "I'll make sure you get fair treatment",
+                    "I understand your concern, but I must review all evidence objectively before making any decisions",
+                    "Ignore the message",
+                    "Forward the message to the developer"
+                ],
+                correct: 1
+            },
+            {
+                id: 4,
+                text: "When explaining a dispute resolution, you should:",
+                options: [
+                    "Give a brief 'approved' or 'rejected'",
+                    "Provide detailed reasoning with evidence references",
+                    "Only communicate through the system",
+                    "Both B and C"
+                ],
+                correct: 3
+            },
+            {
+                id: 5,
+                text: "Escalation to admin is required when:",
+                options: [
+                    "Dispute involves payments over $100",
+                    "Either party requests admin review",
+                    "You're unsure about technical aspects",
+                    "All of the above"
+                ],
+                correct: 3
+            },
+            {
+                id: 6,
+                text: "What's the maximum time frame for initial dispute response?",
+                options: [
+                    "24 hours",
+                    "48 hours",
+                    "72 hours",
+                    "1 week"
+                ],
+                correct: 1
+            },
+            {
+                id: 7,
+                text: "A tester submits a bug report with blurry screenshots and vague description. What should you do?",
+                options: [
+                    "Reject immediately due to poor quality",
+                    "Accept it and ask developer to figure it out",
+                    "Request clearer evidence and detailed steps before proceeding",
+                    "Assign it to another moderator"
+                ],
+                correct: 2
+            },
+            {
+                id: 8,
+                text: "The most important principle in dispute moderation is:",
+                options: [
+                    "Speed of resolution",
+                    "Maintaining neutrality and objectivity",
+                    "Keeping users happy",
+                    "Following admin preferences"
+                ],
+                correct: 1
+            },
+            {
+                id: 9,
+                text: "A bug report claims 'critical security vulnerability' but provides no technical details. Your response?",
+                options: [
+                    "Accept immediately - security is always critical",
+                    "Reject - no evidence provided",
+                    "Request technical details and proof of concept while maintaining confidentiality",
+                    "Forward to admin without review"
+                ],
+                correct: 2
+            },
+            {
+                id: 10,
+                text: "What constitutes valid evidence for a bug report?",
+                options: [
+                    "Screenshots only",
+                    "User testimony only",
+                    "Screenshots, reproduction steps, browser/system info, error logs",
+                    "Developer confirmation only"
+                ],
+                correct: 2
+            },
+            {
+                id: 11,
+                text: "A developer argues that a reported bug is 'working as intended.' How do you evaluate this?",
+                options: [
+                    "Always side with the developer",
+                    "Always side with the tester",
+                    "Review project requirements and specifications to determine if behavior matches stated functionality",
+                    "Ask other users for opinions"
+                ],
+                correct: 2
+            },
+            {
+                id: 12,
+                text: "The severity levels for bugs in TestQuest are:",
+                options: [
+                    "Low, Medium, High",
+                    "Minor, Major, Critical",
+                    "1, 2, 3, 4, 5",
+                    "Basic, Standard, Premium"
+                ],
+                correct: 1
+            },
+            {
+                id: 13,
+                text: "If a tester reports the same bug multiple times for the same project:",
+                options: [
+                    "Award bounty for each report",
+                    "Only award bounty for the first valid report",
+                    "Split the bounty between all reports",
+                    "Ask the developer to decide"
+                ],
+                correct: 1
+            },
+            {
+                id: 14,
+                text: "A dispute involves technical details you don't understand. You should:",
+                options: [
+                    "Make your best guess",
+                    "Ask the community for help",
+                    "Escalate to admin or request technical consultation",
+                    "Flip a coin to decide"
+                ],
+                correct: 2
+            },
+            {
+                id: 15,
+                text: "What information should be included in your dispute resolution explanation?",
+                options: [
+                    "Just your final decision",
+                    "Evidence reviewed, reasoning process, and specific policy references",
+                    "Personal opinions about the case",
+                    "Similar cases you've handled before"
+                ],
+                correct: 1
+            },
+            {
+                id: 16,
+                text: "A tester claims they should get a higher bounty because 'they worked really hard.' Your response?",
+                options: [
+                    "Increase the bounty for their effort",
+                    "Bounties are based on severity and project terms, not effort expended",
+                    "Ask other testers what they think",
+                    "Let the developer decide"
+                ],
+                correct: 1
+            },
+            {
+                id: 17,
+                text: "You notice a pattern of disputes from the same developer always rejecting valid bugs. You should:",
+                options: [
+                    "Start rejecting their future projects",
+                    "Document the pattern and escalate to admin for review",
+                    "Warn other moderators privately",
+                    "Ignore it - not your concern"
+                ],
+                correct: 1
+            },
+            {
+                id: 18,
+                text: "The TestQuest platform processes payments through:",
+                options: [
+                    "Bank transfers only",
+                    "PayPal integration",
+                    "Cryptocurrency only",
+                    "Check payments"
+                ],
+                correct: 1
+            },
+            {
+                id: 19,
+                text: "If both parties in a dispute provide conflicting evidence, you should:",
+                options: [
+                    "Choose the more believable party",
+                    "Split the decision 50/50",
+                    "Request additional evidence or seek technical verification",
+                    "Close the dispute as unresolvable"
+                ],
+                correct: 2
+            },
+            {
+                id: 20,
+                text: "A bug report is submitted after the project deadline. You should:",
+                options: [
+                    "Reject automatically - deadline missed",
+                    "Check project terms for late submission policies before deciding",
+                    "Accept if it's a good bug",
+                    "Ask the community to vote"
+                ],
+                correct: 1
+            },
+            {
+                id: 21,
+                text: "Your role as a moderator includes:",
+                options: [
+                    "Making final payment decisions",
+                    "Reviewing evidence and making impartial dispute resolutions",
+                    "Marketing the platform",
+                    "Writing code fixes for bugs"
+                ],
+                correct: 1
+            },
+            {
+                id: 22,
+                text: "A tester wants to withdraw their bug report after you've already started reviewing it. You should:",
+                options: [
+                    "Allow immediate withdrawal",
+                    "Complete the review process as evidence has already been gathered",
+                    "Ask the developer's permission first",
+                    "Charge a withdrawal fee"
+                ],
+                correct: 1
+            },
+            {
+                id: 23,
+                text: "Communication with disputing parties should be:",
+                options: [
+                    "Friendly and casual",
+                    "Professional, clear, and documented in the system",
+                    "Minimal to avoid complications",
+                    "Only through private messages"
+                ],
+                correct: 1
+            },
+            {
+                id: 24,
+                text: "If you have a personal relationship with someone involved in a dispute, you should:",
+                options: [
+                    "Handle it normally - you can be objective",
+                    "Give them preferential treatment",
+                    "Recuse yourself and assign to another moderator",
+                    "Ask them privately how they want you to handle it"
+                ],
+                correct: 2
+            },
+            {
+                id: 25,
+                text: "The primary goal of TestQuest's dispute system is to:",
+                options: [
+                    "Make money for the platform",
+                    "Ensure fair, accurate, and timely resolution of conflicts",
+                    "Keep users happy at all costs",
+                    "Reduce admin workload"
+                ],
+                correct: 1
+            }
+        ];
+
+        let selectedQuestions = [];
+        let userAnswers = {};
+
+        // Function to shuffle array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Function to select random questions
+        function selectRandomQuestions() {
+            const shuffled = shuffleArray(questionPool);
+            selectedQuestions = shuffled.slice(0, 15); // Select 15 random questions
+        }
+
+        // Function to generate question HTML
+        function generateQuestionHTML(question, index) {
+            const questionNum = index + 1;
+            let html = `
+                <div class="question-card">
+                    <div class="question-title">Question ${questionNum}: ${question.text}</div>
+            `;
+
+            question.options.forEach((option, optionIndex) => {
+                const optionLetter = String.fromCharCode(97 + optionIndex); // a, b, c, d
+                const questionId = `q${question.id}`;
+                const optionId = `${questionId}${optionLetter}`;
+
+                html += `
+                    <div class="option">
+                        <input type="radio" name="${questionId}" value="${optionIndex}" id="${optionId}">
+                        <label for="${optionId}">${option}</label>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            return html;
+        }
+
+        // Function to display questions
+        function displayQuestions() {
+            const part1Container = document.getElementById('questions-part-1');
+            const part2Container = document.getElementById('questions-part-2');
+
+            // Split questions into two parts (8 and 7 questions)
+            const part1Questions = selectedQuestions.slice(0, 8);
+            const part2Questions = selectedQuestions.slice(8, 15);
+
+            // Generate HTML for part 1
+            part1Container.innerHTML = part1Questions
+                .map((q, index) => generateQuestionHTML(q, index))
+                .join('');
+
+            // Generate HTML for part 2
+            part2Container.innerHTML = part2Questions
+                .map((q, index) => generateQuestionHTML(q, index + 8))
+                .join('');
+        }
+
+        function startTimer() {
+            let timeLeft = 300; // 5 minutes in seconds
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent =
+                    `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timer').textContent = '⏱️ Time Up!';
+                    showResults();
+                }
+            }, 1000);
+        }
+
+        function changeSection(direction) {
+            if (direction === 1 && currentSection === 3) {
+                // Moving from section 3 to results - calculate score
+                showResults();
+                return;
+            }
+
+            document.getElementById(`section-${currentSection}`).classList.remove('active');
+            currentSection += direction;
+
+            if (currentSection < 1) currentSection = 1;
+            if (currentSection > totalSections) currentSection = totalSections;
+
+            document.getElementById(`section-${currentSection}`).classList.add('active');
+
+            // Update progress bar
+            const progress = ((currentSection - 1) / totalSections) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+
+            // Update buttons
+            document.getElementById('prevBtn').style.display = currentSection === 1 ? 'none' : 'block';
+            document.getElementById('nextBtn').textContent =
+                currentSection === 3 ? 'Complete Assessment →' :
+                currentSection === 4 ? 'View Results →' : 'Next →';
+        }
+
+        function showResults() {
+            clearInterval(timerInterval);
+
+            // Calculate score based on selected questions
+            let score = 0;
+            let totalQuestions = selectedQuestions.length;
+
+            selectedQuestions.forEach(question => {
+                const selected = document.querySelector(`input[name="q${question.id}"]:checked`);
+                if (selected && parseInt(selected.value) === question.correct) {
+                    score++;
+                }
+            });
+
+            const percentage = Math.round((score / totalQuestions) * 100);
+
+            // Show results section
+            document.getElementById(`section-${currentSection}`).classList.remove('active');
+            document.getElementById('results').classList.add('active');
+
+            // Update progress bar to 100%
+            document.getElementById('progress').style.width = '100%';
+
+            // Display score
+            const scoreDisplay = document.getElementById('score-display');
+            const resultMessage = document.getElementById('result-message');
+
+            scoreDisplay.textContent = percentage + '%';
+
+            if (percentage >= 100) {
+                scoreDisplay.className = 'score-display score-pass';
+                resultMessage.innerHTML = `
+                    <div class="certification-badge">
+                        🏆 CERTIFIED TESTQUEST MODERATOR 🏆<br>
+                        Congratulations! You've passed with a perfect score.
+                    </div>
+                    <h3>✅ Certification Requirements Met:</h3>
+                    <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
+                        <li>✓ Score: ${score}/${totalQuestions} (${percentage}%)</li>
+                        <li>✓ Training completed in under 5 minutes</li>
+                        <li>✓ TestQuest Moderator Code of Conduct accepted</li>
+                    </ul>
+                    <h3>📊 Next Steps:</h3>
+                    <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
+                        <li>Access to moderator dashboard unlocked</li>
+                        <li>Monthly performance reviews</li>
+                        <li>Ongoing dispute resolution assignments</li>
+                    </ul>
+                    <p><strong>Remember:</strong> Your role is to be the fair, neutral referee ensuring TestQuest's bug bounty system works effectively for everyone!</p>
+                `;
+            } else {
+                scoreDisplay.className = 'score-display score-fail';
+                resultMessage.innerHTML = `
+                    <h3>❌ Certification Not Achieved</h3>
+                    <p>You scored ${score}/${totalQuestions} (${percentage}%) but need 15/15 (100%) to become certified.</p>
+                    <p><strong>Please review the training materials and retake the assessment with new randomized questions.</strong></p>
+                    <button class="btn btn-primary" onclick="restartTraining()" style="margin-top: 20px;">
+                        🔄 Retake Training (New Questions)
+                    </button>
+                `;
+            }
+
+            // Hide navigation
+            document.querySelector('.navigation').style.display = 'none';
+        }
+
+        function restartTraining() {
+            currentSection = 1;
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('section-1').classList.add('active');
+            document.getElementById('progress').style.width = '0%';
+            document.querySelector('.navigation').style.display = 'flex';
+
+            // Generate new random questions
+            selectRandomQuestions();
+            displayQuestions();
+
+            // Clear user answers
+            userAnswers = {};
+
+            // Restart timer
+            clearInterval(timerInterval);
+            startTimer();
+        }
+
+        // Initialize
+        window.onload = function() {
+            selectRandomQuestions(); // Generate random questions
+            displayQuestions();      // Display them in the HTML
+            startTimer();           // Start the 5-minute timer
+            changeSection(0);       // Initialize first section
+        };
+    </script>
+</body>
+</html>

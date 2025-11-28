@@ -1,0 +1,16 @@
+{
+  "buildCommand": "cd Frontend && npm ci && npx vite build",
+  "outputDirectory": "Frontend/dist",
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

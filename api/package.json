@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "mongoose": "^8.16.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^3.0.2",
+    "@paypal/checkout-server-sdk": "^1.0.3"
+  }
+}
