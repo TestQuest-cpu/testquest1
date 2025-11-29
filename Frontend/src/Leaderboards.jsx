@@ -102,7 +102,6 @@ function Leaderboards({ onBack, onProfile }) {
                 fontWeight: '500',
                 cursor: 'pointer',
                 fontFamily: 'Sansita, sans-serif',
-                transition: 'all 0.3s ease',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
               }}
               onMouseEnter={(e) => {

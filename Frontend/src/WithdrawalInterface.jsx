@@ -347,7 +347,6 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
                       fontSize: '16px',
                       width: '100%',
                       fontFamily: 'DM Sans, sans-serif',
-                      transition: 'all 0.3s ease',
                       outline: 'none'
                     }}
                     onFocus={(e) => {
@@ -389,7 +388,6 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
                       fontSize: '16px',
                       width: '100%',
                       fontFamily: 'DM Sans, sans-serif',
-                      transition: 'all 0.3s ease',
                       outline: 'none'
                     }}
                     onFocus={(e) => {
