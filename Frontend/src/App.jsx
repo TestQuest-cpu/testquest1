@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { AdminRoute } from "./components/Routes.jsx";
 import LandingPage from "./LandingPage.jsx";
 import Login from "./Login.jsx";
 import Dashboard from "./Dashboard.jsx";
@@ -19,24 +21,13 @@ import Leaderboards from "./Leaderboards.jsx";
 import './index.css';
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('landing');
+  const navigate = useNavigate();
   const [dashboardRefresh, setDashboardRefresh] = useState(0);
-  const [isAdminMode, setIsAdminMode] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [isModeratorMode, setIsModeratorMode] = useState(false);
-
 
   useEffect(() => {
-    const urlPath = window.location.pathname;
     const urlParams = new URLSearchParams(window.location.search);
-
-    // Check if accessing admin routes
-    if (urlPath === '/admin' || urlParams.get('admin') === 'true') {
-      setIsAdminMode(true);
-      setCurrentScreen('adminLogin');
-      return;
-    }
 
     // Check for OAuth callback parameters
     const urlToken = urlParams.get('token');
@@ -55,105 +46,61 @@ function App() {
 
         // Navigate based on account type
         if (user.accountType === 'tester') {
-          setCurrentScreen('testerDashboard');
+          navigate('/tester/dashboard', { replace: true });
         } else if (user.accountType === 'developer') {
-          setCurrentScreen('developerDashboard');
+          navigate('/developer/dashboard', { replace: true });
         } else {
           // Default to tester dashboard if account type is missing
-          setCurrentScreen('testerDashboard');
+          navigate('/tester/dashboard', { replace: true });
         }
         return;
       } catch (error) {
         console.error('OAuth login failed:', error);
-        setCurrentScreen('login');
+        navigate('/login', { replace: true });
         return;
       }
     }
-
-    // Check for moderator session FIRST (before regular user)
-    const moderatorToken = localStorage.getItem('moderatorToken');
-    const moderatorInfo = localStorage.getItem('moderatorInfo');
-    const inModeratorMode = sessionStorage.getItem('inModeratorMode') === 'true';
-
-    // Only stay in moderator mode if BOTH the flag is set AND we have valid moderator credentials
-    if (inModeratorMode && moderatorToken && moderatorInfo) {
-      setIsModeratorMode(true);
-      setCurrentScreen('moderator');
-      return;
-    }
-
-    // If inModeratorMode is set but no valid moderator credentials, clear the flag
-    if (inModeratorMode && (!moderatorToken || !moderatorInfo)) {
-      sessionStorage.removeItem('inModeratorMode');
-    }
-
-    // Check if user is already authenticated
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    const user = localStorage.getItem('user') || sessionStorage.getItem('user');
-
-    if (token && user) {
-      try {
-        const userData = JSON.parse(user);
-        setIsModeratorMode(false);
-
-        if (userData.accountType === 'developer') {
-          setCurrentScreen('developerDashboard');
-        } else if (userData.accountType === 'tester') {
-          setCurrentScreen('testerDashboard');
-        } else {
-          setCurrentScreen('login');
-        }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        setCurrentScreen('login');
-      }
-    } else {
-      setCurrentScreen('landing');
-    }
-  }, []);
+  }, [navigate]);
 
   const handleLoginAsTester = () => {
     sessionStorage.removeItem('inModeratorMode');
-    setIsModeratorMode(false);
-    setCurrentScreen('testerDashboard');
+    navigate('/tester/dashboard');
   };
 
   const handleLoginAsDeveloper = () => {
     sessionStorage.removeItem('inModeratorMode');
-    setIsModeratorMode(false);
-    setCurrentScreen('developerDashboard');
+    navigate('/developer/dashboard');
   };
 
   const handlePostProject = () => {
-    setCurrentScreen('post');
+    navigate('/developer/post');
   };
 
   const handleBackToDashboard = () => {
     // Clear moderator mode when going back to regular dashboard
     sessionStorage.removeItem('inModeratorMode');
-    setIsModeratorMode(false);
 
     // Check user account type to determine which dashboard to return to
     try {
       const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
       if (user.accountType === 'developer') {
-        setCurrentScreen('developerDashboard');
+        navigate('/developer/dashboard');
       } else if (user.accountType === 'tester') {
-        setCurrentScreen('testerDashboard');
+        navigate('/tester/dashboard');
       } else {
         // If account type is unclear, redirect to login for security
-        setCurrentScreen('login');
+        navigate('/login');
       }
     } catch (error) {
       console.error('Error parsing user data:', error);
       // If account type is unclear, redirect to login for security
-      setCurrentScreen('login');
+      navigate('/login');
     }
     setDashboardRefresh(prev => prev + 1); // Trigger refresh
   };
 
   const handleProfile = () => {
-    setCurrentScreen('profile');
+    navigate('/profile');
   };
 
   const handleLogout = () => {
@@ -162,19 +109,17 @@ function App() {
     localStorage.removeItem('user');
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
-    
-    setCurrentScreen('login');
+
+    navigate('/login');
   };
 
   const handleAdminLogin = () => {
-    setCurrentScreen('adminDashboard');
+    navigate('/admin/dashboard');
   };
 
   const handleAdminLogout = () => {
-    setIsAdminMode(false);
-    setCurrentScreen('login');
-    // Clear URL parameters
-    window.history.replaceState({}, document.title, '/');
+    localStorage.removeItem('adminToken');
+    navigate('/login');
   };
 
   const handleProjectClick = (project) => {
@@ -185,17 +130,17 @@ function App() {
       // If project is an object (from developer dashboard), show project view
       if (typeof project === 'object' && project._id) {
         setSelectedProject(project);
-        setCurrentScreen('projectView');
+        navigate(`/developer/project/${project._id}`);
       }
     } else if (user.accountType === 'tester') {
       // For testers, we need to fetch the full project data and show tester project view
       if (typeof project === 'string') {
         // If it's just an ID, set it for the tester project view
         setSelectedProjectId(project);
-        setCurrentScreen('testerProjectView');
+        navigate(`/tester/project/${project}`);
       } else if (typeof project === 'object' && project._id) {
         setSelectedProject(project);
-        setCurrentScreen('testerProjectView');
+        navigate(`/tester/project/${project._id}`);
       }
     }
   };
@@ -203,15 +148,15 @@ function App() {
   const handleCategorize = () => {
     // Handle categorize button click
     console.log('Categorize clicked');
-    // setCurrentScreen('categorize'); // When you create this screen
-};
+    // navigate('/categorize'); // When you create this screen
+  };
 
   const handleLogs = () => {
-  setCurrentScreen('logs');
-};
+    navigate('/logs');
+  };
 
   const handleLeaderboards = () => {
-    setCurrentScreen('leaderboards');
+    navigate('/leaderboards');
   };
 
   const handleLeaderboardsBack = () => {
@@ -219,188 +164,55 @@ function App() {
     try {
       const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
       if (user.accountType === 'developer') {
-        setCurrentScreen('developerDashboard');
+        navigate('/developer/dashboard');
       } else if (user.accountType === 'tester') {
-        setCurrentScreen('testerDashboard');
+        navigate('/tester/dashboard');
       } else {
-        setCurrentScreen('login');
+        navigate('/login');
       }
     } catch (error) {
       console.error('Error parsing user data:', error);
-      setCurrentScreen('login');
+      navigate('/login');
     }
   };
 
   const handleModeratorAccess = () => {
     sessionStorage.setItem('inModeratorMode', 'true');
-    setIsModeratorMode(true);
-    setCurrentScreen('moderator');
+    navigate('/moderator');
   };
 
-  // Admin routes
-  if (currentScreen === 'adminLogin') {
-    return <AdminLogin onAdminLogin={handleAdminLogin} />;
-  }
+  return (
+    <Routes>
+      {/* Landing Page */}
+      <Route path="/" element={<LandingPage onGetStarted={() => navigate('/login')} />} />
 
-  if (currentScreen === 'adminDashboard') {
-    return <AdminDashboard onLogout={handleAdminLogout} />;
-  }
-
-  // Moderator Exam route - CHECK THIS FIRST!
-  if (currentScreen === 'moderatorExam') {
-    console.log('Rendering ModeratorExam');
-
-    return <ModeratorExam
-      onBack={() => {
-        // Determine which profile screen to return to based on current user
-        const userData = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-        if (userData.accountType === 'tester') {
-          setCurrentScreen('testerProfile');
-        } else {
-          setCurrentScreen('profile');
+      {/* Login */}
+      <Route
+        path="/login"
+        element={
+          <Login
+            onLoginAsTester={handleLoginAsTester}
+            onLoginAsDeveloper={handleLoginAsDeveloper}
+            onModeratorAccess={handleModeratorAccess}
+          />
         }
-      }}
-      onComplete={(score) => {
-        // Return to profile after application submission
-        const userData = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-        if (userData.accountType === 'tester') {
-          setCurrentScreen('testerProfile');
-        } else {
-          setCurrentScreen('profile');
+      />
+
+      {/* Admin Routes */}
+      <Route path="/admin/login" element={<AdminLogin onAdminLogin={handleAdminLogin} />} />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <AdminDashboard onLogout={handleAdminLogout} />
+          </AdminRoute>
         }
-      }}
-    />;
-  }
+      />
 
-  // Moderator Setup route
-  if (currentScreen === 'moderatorSetup') {
-    return <ModeratorSetup
-      onBack={() => {
-        const userData = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-        if (userData.accountType === 'tester') {
-          setCurrentScreen('testerProfile');
-        } else {
-          setCurrentScreen('profile');
-        }
-      }}
-      onComplete={() => {
-        // Redirect to moderator portal after setup
-        setCurrentScreen('moderator');
-      }}
-    />;
-  }
-
-  // Moderator routes - AFTER exam route
-  if (currentScreen === 'moderator') {
-    console.log('Rendering ModeratorApp');
-    return <ModeratorApp />;
-  }
-
-  // Landing page
-  if (currentScreen === 'landing') {
-    return <LandingPage onGetStarted={() => setCurrentScreen('login')} />;
-  }
-
-  // Regular user routes
-  if (currentScreen === 'login') {
-    return <Login
-      onLoginAsTester={handleLoginAsTester}
-      onLoginAsDeveloper={handleLoginAsDeveloper}
-      onModeratorAccess={handleModeratorAccess}
-    />;
-  }
-
-  if (currentScreen === 'testerDashboard') {
-  return <TesterDashboard 
-    onProjectClick={handleProjectClick} 
-    onCategorize={handleCategorize}
-    onProfile={() => setCurrentScreen('testerProfile')}
-    onLeaderboards={handleLeaderboards}
-  />;
-}
-
-  if (currentScreen === 'developerDashboard') {
-    return <DeveloperDashboard 
-      onPost={handlePostProject}
-      onProjectClick={handleProjectClick}
-      onProfile={() => setCurrentScreen('profile')}
-      onLeaderboards={handleLeaderboards}
-    />;
-  }
-
-  if (currentScreen === 'projectView') {
-    return <ProjectView
-      project={selectedProject}
-      onBack={() => setCurrentScreen('developerDashboard')}
-    />;
-  }
-
-  if (currentScreen === 'testerProjectView') {
-    return <TesterProjectView
-      project={selectedProject}
-      projectId={selectedProjectId}
-      onBack={() => setCurrentScreen('testerDashboard')}
-      onLeaderboards={handleLeaderboards}
-      onProfile={() => setCurrentScreen('testerProfile')}
-      onBugReport={(projectId) => {
-        setSelectedProjectId(projectId);
-        setCurrentScreen('bugReport');
-      }}
-    />;
-  }
-
-  if (currentScreen === 'post') {
-    return <Post onBack={handleBackToDashboard} onProfile={handleProfile} />;
-  }
-
-  if (currentScreen === 'profile') {
-  return <Profile onBack={handleBackToDashboard} onLogout={handleLogout} onLeaderboards={handleLeaderboards} onModeratorExam={() => {
-    console.log('Setting screen to moderatorExam');
-    setCurrentScreen('moderatorExam');
-  }} onModeratorSetup={() => setCurrentScreen('moderatorSetup')} />;
-}
-
-  if (currentScreen === 'testerProfile') {
-  return <Profile onBack={() => setCurrentScreen('testerDashboard')} onLogout={handleLogout} onLeaderboards={handleLeaderboards} onModeratorExam={() => {
-    console.log('Setting screen to moderatorExam');
-    setCurrentScreen('moderatorExam');
-  }} onModeratorSetup={() => setCurrentScreen('moderatorSetup')} />;
-}
-
-  if (currentScreen === 'bugReport') {
-    return <BugReport
-      projectId={selectedProjectId}
-      onBack={() => setCurrentScreen('testerProjectView')}
-      onProfile={() => setCurrentScreen('testerProfile')}
-      onLeaderboards={handleLeaderboards}
-    />;
-  } 
-
-if (currentScreen === 'logs') {
-  return <Logs onBack={handleBackToDashboard} />;
-}
-
-  if (currentScreen === 'leaderboards') {
-    return <Leaderboards 
-      onBack={handleLeaderboardsBack} 
-      onProfile={() => {
-        try {
-          const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-          if (user.accountType === 'tester') {
-            setCurrentScreen('testerProfile');
-          } else {
-            setCurrentScreen('profile');
-          }
-        } catch (error) {
-          setCurrentScreen('profile');
-        }
-      }}
-    />;
-  }
-
-  // Default fallback should never happen with proper authentication
-  // If we reach here, redirect to login for security
-  return <Login onLoginAsTester={handleLoginAsTester} onLoginAsDeveloper={handleLoginAsDeveloper} />;
+      {/* Temporary: Other routes will be added in subsequent parts */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
 
 export default App;
