@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { AdminRoute } from "./components/Routes.jsx";
+import { AdminRoute, TesterRoute, DeveloperRoute, ProtectedRoute } from "./components/Routes.jsx";
+import { ProjectViewWrapper, TesterProjectViewWrapper, BugReportWrapper } from "./components/ProjectViewWrapper.jsx";
 import LandingPage from "./LandingPage.jsx";
 import Login from "./Login.jsx";
 import Dashboard from "./Dashboard.jsx";
@@ -8,9 +9,6 @@ import TesterDashboard from "./TesterDashboard.jsx";
 import DeveloperDashboard from "./DeveloperDashboard.jsx";
 import Post from "./Post.jsx";
 import Profile from "./Profile.jsx";
-import BugReport from "./BugReport.jsx";
-import ProjectView from "./ProjectView.jsx";
-import TesterProjectView from "./TesterProjectView.jsx";
 import Logs from "./Logs.jsx";
 import AdminLogin from "./AdminLogin.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
@@ -23,8 +21,6 @@ import './index.css';
 function App() {
   const navigate = useNavigate();
   const [dashboardRefresh, setDashboardRefresh] = useState(0);
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -129,19 +125,12 @@ function App() {
     if (user.accountType === 'developer') {
       // If project is an object (from developer dashboard), show project view
       if (typeof project === 'object' && project._id) {
-        setSelectedProject(project);
         navigate(`/developer/project/${project._id}`);
       }
     } else if (user.accountType === 'tester') {
-      // For testers, we need to fetch the full project data and show tester project view
-      if (typeof project === 'string') {
-        // If it's just an ID, set it for the tester project view
-        setSelectedProjectId(project);
-        navigate(`/tester/project/${project}`);
-      } else if (typeof project === 'object' && project._id) {
-        setSelectedProject(project);
-        navigate(`/tester/project/${project._id}`);
-      }
+      // For testers, navigate to project view with projectId in URL
+      const projectId = typeof project === 'string' ? project : project._id;
+      navigate(`/tester/project/${projectId}`);
     }
   };
 
@@ -209,7 +198,203 @@ function App() {
         }
       />
 
-      {/* Temporary: Other routes will be added in subsequent parts */}
+      {/* Tester Dashboard Routes */}
+      <Route
+        path="/tester/dashboard"
+        element={
+          <TesterRoute>
+            <TesterDashboard
+              onProjectClick={handleProjectClick}
+              onCategorize={handleCategorize}
+              onProfile={() => navigate('/tester/profile')}
+              onLeaderboards={handleLeaderboards}
+            />
+          </TesterRoute>
+        }
+      />
+
+      {/* Developer Dashboard Routes */}
+      <Route
+        path="/developer/dashboard"
+        element={
+          <DeveloperRoute>
+            <DeveloperDashboard
+              onPost={handlePostProject}
+              onProjectClick={handleProjectClick}
+              onProfile={() => navigate('/developer/profile')}
+              onLeaderboards={handleLeaderboards}
+            />
+          </DeveloperRoute>
+        }
+      />
+
+      {/* Developer Post Project */}
+      <Route
+        path="/developer/post"
+        element={
+          <DeveloperRoute>
+            <Post onBack={handleBackToDashboard} onProfile={handleProfile} />
+          </DeveloperRoute>
+        }
+      />
+
+      {/* Profile Routes */}
+      <Route
+        path="/developer/profile"
+        element={
+          <DeveloperRoute>
+            <Profile
+              onBack={handleBackToDashboard}
+              onLogout={handleLogout}
+              onLeaderboards={handleLeaderboards}
+              onModeratorExam={() => navigate('/moderator/exam')}
+              onModeratorSetup={() => navigate('/moderator/setup')}
+            />
+          </DeveloperRoute>
+        }
+      />
+      <Route
+        path="/tester/profile"
+        element={
+          <TesterRoute>
+            <Profile
+              onBack={() => navigate('/tester/dashboard')}
+              onLogout={handleLogout}
+              onLeaderboards={handleLeaderboards}
+              onModeratorExam={() => navigate('/moderator/exam')}
+              onModeratorSetup={() => navigate('/moderator/setup')}
+            />
+          </TesterRoute>
+        }
+      />
+
+      {/* Project View Routes */}
+      <Route
+        path="/developer/project/:projectId"
+        element={
+          <DeveloperRoute>
+            <ProjectViewWrapper
+              onBack={() => navigate('/developer/dashboard')}
+            />
+          </DeveloperRoute>
+        }
+      />
+      <Route
+        path="/tester/project/:projectId"
+        element={
+          <TesterRoute>
+            <TesterProjectViewWrapper
+              onBack={() => navigate('/tester/dashboard')}
+              onLeaderboards={handleLeaderboards}
+              onProfile={() => navigate('/tester/profile')}
+              onBugReport={(projectId) => navigate(`/tester/bug-report/${projectId}`)}
+            />
+          </TesterRoute>
+        }
+      />
+
+      {/* Bug Report Route */}
+      <Route
+        path="/tester/bug-report/:projectId"
+        element={
+          <TesterRoute>
+            <BugReportWrapper
+              onBack={() => navigate(-1)}
+              onProfile={() => navigate('/tester/profile')}
+              onLeaderboards={handleLeaderboards}
+            />
+          </TesterRoute>
+        }
+      />
+
+      {/* Leaderboards Route */}
+      <Route
+        path="/leaderboards"
+        element={
+          <ProtectedRoute>
+            <Leaderboards
+              onBack={handleLeaderboardsBack}
+              onProfile={() => {
+                try {
+                  const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+                  if (user.accountType === 'tester') {
+                    navigate('/tester/profile');
+                  } else {
+                    navigate('/developer/profile');
+                  }
+                } catch (error) {
+                  navigate('/developer/profile');
+                }
+              }}
+            />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Logs Route */}
+      <Route
+        path="/logs"
+        element={
+          <ProtectedRoute>
+            <Logs onBack={handleBackToDashboard} />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Moderator Routes */}
+      <Route
+        path="/moderator/exam"
+        element={
+          <ProtectedRoute>
+            <ModeratorExam
+              onBack={() => {
+                const userData = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+                if (userData.accountType === 'tester') {
+                  navigate('/tester/profile');
+                } else {
+                  navigate('/developer/profile');
+                }
+              }}
+              onComplete={(score) => {
+                const userData = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+                if (userData.accountType === 'tester') {
+                  navigate('/tester/profile');
+                } else {
+                  navigate('/developer/profile');
+                }
+              }}
+            />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/moderator/setup"
+        element={
+          <ProtectedRoute>
+            <ModeratorSetup
+              onBack={() => {
+                const userData = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+                if (userData.accountType === 'tester') {
+                  navigate('/tester/profile');
+                } else {
+                  navigate('/developer/profile');
+                }
+              }}
+              onComplete={() => navigate('/moderator')}
+            />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/moderator"
+        element={
+          <ModeratorRoute>
+            <ModeratorApp />
+          </ModeratorRoute>
+        }
+      />
+
+      {/* Fallback - redirect to landing */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
