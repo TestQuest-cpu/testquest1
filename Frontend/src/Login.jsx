@@ -290,7 +290,18 @@ function Login({ onLoginAsTester, onLoginAsDeveloper, onModeratorAccess }) {
         throw new Error(data.message || 'Authentication failed');
       }
 
-      // Store token in localStorage
+      // Handle signup differently - no token/user returned, just email sent
+      if (activeTab === 'signup') {
+        setError(''); // Clear any errors
+        alert(`Success! Check your email (${email}) to complete account creation.`);
+        // Clear form
+        setName('');
+        setEmail('');
+        setPassword('');
+        return;
+      }
+
+      // Login flow - store token and navigate
       if (rememberMe) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
