@@ -81,7 +81,7 @@ const pendingUserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   accountType: { type: String, required: true, enum: ['tester', 'developer'] },
   verificationToken: { type: String, required: true, unique: true },
-  expiresAt: { type: Date, required: true, index: { expires: 0 } }
+  expiresAt: { type: Date, required: true }
 }, { timestamps: true });
 
 const PendingUser = mongoose.models.PendingUser || mongoose.model('PendingUser', pendingUserSchema);
@@ -291,11 +291,17 @@ async function handleVerifyEmail(req, res) {
   }
 
   try {
-    // Find pending user with valid token (MongoDB TTL will auto-delete expired ones)
+    // Find pending user with valid token
     const pendingUser = await PendingUser.findOne({ verificationToken: token });
 
     if (!pendingUser) {
       return res.status(400).json({ message: 'Invalid or expired verification link' });
+    }
+
+    // Check if token is expired
+    if (new Date() > pendingUser.expiresAt) {
+      await PendingUser.deleteOne({ _id: pendingUser._id });
+      return res.status(400).json({ message: 'Verification link has expired. Please sign up again.' });
     }
 
     // Check if user already exists (in case they verified twice)

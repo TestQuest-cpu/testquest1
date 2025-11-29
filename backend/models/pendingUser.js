@@ -26,8 +26,7 @@ const pendingUserSchema = new mongoose.Schema({
   },
   expiresAt: {
     type: Date,
-    required: true,
-    index: { expires: 0 } // TTL index - MongoDB will auto-delete expired documents
+    required: true
   }
 }, {
   timestamps: true
