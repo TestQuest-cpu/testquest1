@@ -454,7 +454,7 @@ module.exports = async (req, res) => {
       
       if (user.accountType !== 'developer') {
         console.log('Access denied - user account type:', user.accountType);
-        return res.status(403).json({ 
+        return res.status(403).json({
           message: 'Developer account required',
           debug: { userAccountType: user.accountType }
         });

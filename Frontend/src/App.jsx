@@ -16,6 +16,7 @@ import ModeratorApp from "./ModeratorApp.jsx";
 import ModeratorExam from "./ModeratorExam.jsx";
 import ModeratorSetup from "./ModeratorSetup.jsx";
 import Leaderboards from "./Leaderboards.jsx";
+import VerifyEmail from "./VerifyEmail.jsx";
 import './index.css';
 
 function App() {
@@ -186,6 +187,9 @@ function App() {
           />
         }
       />
+
+      {/* Email Verification */}
+      <Route path="/verify-email" element={<VerifyEmail />} />
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin onAdminLogin={handleAdminLogin} />} />
