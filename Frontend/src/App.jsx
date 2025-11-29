@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { AdminRoute, TesterRoute, DeveloperRoute, ProtectedRoute } from "./components/Routes.jsx";
+import { AdminRoute, TesterRoute, DeveloperRoute, ProtectedRoute, ModeratorRoute } from "./components/Routes.jsx";
 import { ProjectViewWrapper, TesterProjectViewWrapper, BugReportWrapper } from "./components/ProjectViewWrapper.jsx";
 import LandingPage from "./LandingPage.jsx";
 import Login from "./Login.jsx";
