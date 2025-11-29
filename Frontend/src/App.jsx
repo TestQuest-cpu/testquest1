@@ -60,12 +60,12 @@ function App() {
 
   const handleLoginAsTester = () => {
     sessionStorage.removeItem('inModeratorMode');
-    navigate('/tester/dashboard');
+    navigate('/tester/dashboard', { replace: true });
   };
 
   const handleLoginAsDeveloper = () => {
     sessionStorage.removeItem('inModeratorMode');
-    navigate('/developer/dashboard');
+    navigate('/developer/dashboard', { replace: true });
   };
 
   const handlePostProject = () => {
