@@ -18,7 +18,6 @@ function Post({ onBack, onProfile }) {
   const [formData, setFormData] = useState({
     name: '',
     platform: '',
-    scope: '',
     objective: '',
     areasToTest: '',
     bugRewards: {
@@ -136,7 +135,7 @@ function Post({ onBack, onProfile }) {
       }
 
       // Validate form data before proceeding to payment
-      if (!formData.name || !formData.platform || !formData.scope || !formData.objective ||
+      if (!formData.name || !formData.platform || !formData.objective ||
           !formData.areasToTest || !formData.totalBounty || !formData.projectLink) {
         setError('Please fill in all required fields');
         setLoading(false);
@@ -504,38 +503,6 @@ function Post({ onBack, onProfile }) {
                         fontSize: '1rem',
                         transition: 'all 0.3s ease',
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = '#4ECDC4';
-                        e.target.style.boxShadow = '0 4px 15px rgba(78, 205, 196, 0.3)';
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = theme.border;
-                        e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
-                      }}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '0.9rem', color: theme.textPrimary, display: 'block', marginBottom: '4px', fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>
-                      <strong>Scope:</strong>
-                    </label>
-                    <textarea
-                      name="scope"
-                      value={formData.scope}
-                      onChange={handleInputChange}
-                      className="form-control"
-                      style={{
-                        backgroundColor: theme.statsCardBg,
-                        border: `1px solid ${theme.border}`,
-                        color: theme.textPrimary,
-                        height: '96px',
-                        borderRadius: '12px',
-                        padding: '18px',
-                        fontSize: '1rem',
-                        transition: 'all 0.3s ease',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                        resize: 'none'
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#4ECDC4';

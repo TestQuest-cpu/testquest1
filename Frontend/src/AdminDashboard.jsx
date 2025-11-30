@@ -1203,25 +1203,6 @@ function ProjectsManagement({ theme, isLightMode }) {
 
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ fontSize: '14px', fontWeight: '500', color: theme.textPrimary, fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>
-                  Scope:
-                </label>
-                <div style={{
-                  fontSize: '14px',
-                  color: theme.textSecondary,
-                  fontFamily: 'DM Sans, sans-serif',
-                  marginTop: '4px',
-                  padding: '12px',
-                  backgroundColor: theme.statsCardBg,
-                  borderRadius: '6px',
-                  border: `1px solid ${theme.border}`,
-                  transition: 'all 0.3s ease'
-                }}>
-                  {selectedProject.scope}
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ fontSize: '14px', fontWeight: '500', color: theme.textPrimary, fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>
                   Areas to Test:
                 </label>
                 <div style={{

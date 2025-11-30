@@ -364,7 +364,7 @@ function Dashboard({ onPostProject, onProfile, onLogs, refreshTrigger }) {
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden'
-              }}>{project.scope}</p>
+              }}>{project.objective}</p>
 
               {/* Bounty Breakdown */}
               <div style={{

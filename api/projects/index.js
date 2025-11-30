@@ -20,7 +20,7 @@ const projectSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   platform: { type: String, required: true, trim: true },
-  scope: { type: String, required: true },
+  scope: { type: String, required: false }, // Keep for backward compatibility
   objective: { type: String, required: true },
   areasToTest: { type: String, required: true },
   bugRewards: {
@@ -461,7 +461,7 @@ module.exports = async (req, res) => {
       }
 
       const {
-        name, platform, scope, objective, areasToTest,
+        name, platform, objective, areasToTest,
         bugRewards, totalBudget, totalBounty, notes, projectLink, image
       } = req.body;
 
@@ -469,10 +469,10 @@ module.exports = async (req, res) => {
       const budgetAmount = totalBudget || totalBounty;
 
       // Validate required fields
-      if (!name || !platform || !scope || !objective || !areasToTest || !budgetAmount || !projectLink) {
+      if (!name || !platform || !objective || !areasToTest || !budgetAmount || !projectLink) {
         return res.status(400).json({
-          message: 'Missing required fields: name, platform, scope, objective, areasToTest, totalBudget, projectLink',
-          received: { name, platform, scope, objective, areasToTest, totalBudget: budgetAmount, projectLink }
+          message: 'Missing required fields: name, platform, objective, areasToTest, totalBudget, projectLink',
+          received: { name, platform, objective, areasToTest, totalBudget: budgetAmount, projectLink }
         });
       }
 
@@ -529,7 +529,6 @@ module.exports = async (req, res) => {
         name,
         postedBy: user._id,
         platform,
-        scope,
         objective,
         areasToTest,
         bugRewards: parsedBugRewards,

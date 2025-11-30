@@ -381,7 +381,7 @@ function TesterDashboard({ onProjectClick, onCategorize, onProfile, onLeaderboar
                 overflow: 'hidden',
                 fontFamily: 'DM Sans, sans-serif',
                 transition: 'color 0.3s ease'
-              }}>{project.scope}</p>
+              }}>{project.objective}</p>
 
               {/* Bug Rewards - Simplified */}
               <div style={{ marginBottom: '14px' }}>

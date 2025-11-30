@@ -156,7 +156,7 @@ const projectSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   platform: { type: String, required: true, trim: true },
-  scope: { type: String, required: true },
+  scope: { type: String, required: false }, // Keep for backward compatibility
   objective: { type: String, required: true },
   areasToTest: { type: String, required: true },
   bugRewards: {
@@ -579,7 +579,6 @@ module.exports = async (req, res) => {
               userId,
               name: projectData.name,
               platform: projectData.platform,
-              scope: projectData.scope?.substring(0, 50),
               objective: projectData.objective?.substring(0, 50),
               areasToTest: projectData.areasToTest?.substring(0, 50),
               projectLink: projectData.projectLink,
@@ -598,7 +597,6 @@ module.exports = async (req, res) => {
               name: projectData.name,
               postedBy: userId,
               platform: projectData.platform,
-              scope: projectData.scope,
               objective: projectData.objective,
               areasToTest: projectData.areasToTest,
               bugRewards: {
@@ -621,7 +619,6 @@ module.exports = async (req, res) => {
               platform: project.platform,
               totalBudget: project.totalBudget,
               projectLink: project.projectLink,
-              hasScope: !!project.scope,
               hasObjective: !!project.objective,
               hasAreasToTest: !!project.areasToTest
             });

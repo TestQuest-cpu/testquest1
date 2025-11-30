@@ -5,3 +5,15 @@ Frontend/.env
 *.env
 *.env.local
 *.env.production
+
+# Dependencies
+node_modules/
+**/node_modules/
+package-lock.json
+
+# Build files
+dist/
+build/
+
+# Other
+nul

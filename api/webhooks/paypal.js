@@ -7,7 +7,7 @@ const projectSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   platform: { type: String, required: true, trim: true },
-  scope: { type: String, required: true },
+  scope: { type: String, required: false }, // Keep for backward compatibility
   objective: { type: String, required: true },
   areasToTest: { type: String, required: true },
   bugRewards: {

@@ -510,7 +510,7 @@ function DeveloperDashboard({ onPost, onProjectClick, onProfile, onLeaderboards 
                   overflow: 'hidden',
                   fontFamily: 'DM Sans, sans-serif',
                   transition: 'color 0.3s ease'
-                }}>{project.objective || project.scope}</p>
+                }}>{project.objective}</p>
 
                 {/* Footer */}
                 <div className="d-flex justify-content-between align-items-center">

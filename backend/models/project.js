@@ -18,7 +18,7 @@ const projectSchema = new mongoose.Schema({
   },
   scope: {
     type: String,
-    required: true
+    required: false // Keep for backward compatibility with old projects
   },
   objective: {
     type: String,

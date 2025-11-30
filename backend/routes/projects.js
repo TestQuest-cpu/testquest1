@@ -9,7 +9,6 @@ router.post('/', authenticateToken, requireDeveloper, async (req, res) => {
     const {
       name,
       platform,
-      scope,
       objective,
       areasToTest,
       bugRewards,
@@ -20,9 +19,9 @@ router.post('/', authenticateToken, requireDeveloper, async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!name || !platform || !scope || !objective || !areasToTest || !totalBounty || !projectLink) {
-      return res.status(400).json({ 
-        message: 'Missing required fields: name, platform, scope, objective, areasToTest, totalBounty, projectLink' 
+    if (!name || !platform || !objective || !areasToTest || !totalBounty || !projectLink) {
+      return res.status(400).json({
+        message: 'Missing required fields: name, platform, objective, areasToTest, totalBounty, projectLink'
       });
     }
 
@@ -61,7 +60,6 @@ router.post('/', authenticateToken, requireDeveloper, async (req, res) => {
       name,
       postedBy: req.user._id,
       platform,
-      scope,
       objective,
       areasToTest,
       bugRewards: parsedBugRewards,
@@ -164,7 +162,7 @@ router.put('/:id', authenticateToken, requireDeveloper, async (req, res) => {
       return res.status(400).json({ message: 'Cannot update approved or completed projects' });
     }
 
-    const allowedUpdates = ['name', 'platform', 'scope', 'objective', 'areasToTest', 'bugRewards', 'notes', 'projectLink', 'image'];
+    const allowedUpdates = ['name', 'platform', 'objective', 'areasToTest', 'bugRewards', 'notes', 'projectLink', 'image'];
     const updates = {};
     
     allowedUpdates.forEach(field => {
