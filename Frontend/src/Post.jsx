@@ -556,7 +556,7 @@ function Post({ onBack, onProfile }) {
                           style={{
                             backgroundColor: theme.statsCardBg,
                             border: `1px solid ${isPlatformDropdownOpen ? '#4ECDC4' : theme.border}`,
-                            color: formData.platform ? theme.textPrimary : 'rgba(255, 255, 255, 0.5)',
+                            color: formData.platform ? theme.textPrimary : (isLightMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.5)'),
                             height: '48px',
                             borderRadius: '12px',
                             padding: '0 40px 0 18px',
@@ -590,7 +590,7 @@ function Post({ onBack, onProfile }) {
                           <div
                             className="custom-dropdown-menu"
                             style={{
-                              backgroundColor: isLightMode ? '#FFFFFF' : '#1F2937',
+                              backgroundColor: theme.statsCardBg,
                               border: `2px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.3)'}`,
                               borderRadius: '12px'
                             }}
