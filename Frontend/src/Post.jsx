@@ -39,6 +39,7 @@ function Post({ onBack, onProfile }) {
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [showSeverityGuide, setShowSeverityGuide] = useState(false);
   const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false);
+  const [isCustomPlatform, setIsCustomPlatform] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -198,7 +199,7 @@ function Post({ onBack, onProfile }) {
             top: 100%;
             left: 0;
             right: 0;
-            background-color: ${isLightMode ? '#FFFFFF' : '#1F2937'};
+            background-color: ${isLightMode ? '#FFFFFF' : '#1F2937'} !important;
             border: 2px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.3)'};
             border-radius: 12px;
             margin-top: 4px;
@@ -546,7 +547,7 @@ function Post({ onBack, onProfile }) {
                       <strong>Platform:</strong>
                     </label>
                     {/* Custom Dropdown */}
-                    {['', 'Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) ? (
+                    {!isCustomPlatform ? (
                       <div style={{ position: 'relative' }}>
                         <div
                           onClick={() => setIsPlatformDropdownOpen(!isPlatformDropdownOpen)}
@@ -636,7 +637,8 @@ function Post({ onBack, onProfile }) {
                             <div
                               className="custom-dropdown-option"
                               onClick={() => {
-                                setFormData(prev => ({ ...prev, platform: 'Custom' }));
+                                setFormData(prev => ({ ...prev, platform: '' }));
+                                setIsCustomPlatform(true);
                                 setIsPlatformDropdownOpen(false);
                               }}
                             >
@@ -646,8 +648,8 @@ function Post({ onBack, onProfile }) {
                         )}
                       </div>
                     ) : null}
-                    {!['', 'Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) && (
-                      <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {isCustomPlatform && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <input
                           type="text"
                           name="platform"
@@ -678,7 +680,10 @@ function Post({ onBack, onProfile }) {
                         />
                         <button
                           type="button"
-                          onClick={() => setFormData(prev => ({ ...prev, platform: '' }))}
+                          onClick={() => {
+                            setFormData(prev => ({ ...prev, platform: '' }));
+                            setIsCustomPlatform(false);
+                          }}
                           style={{
                             background: 'rgba(255, 107, 107, 0.2)',
                             border: '1px solid rgba(255, 107, 107, 0.4)',
