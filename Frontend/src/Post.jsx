@@ -190,6 +190,22 @@ function Post({ onBack, onProfile }) {
             color: rgba(255, 255, 255, 0.6) !important;
             opacity: 1 !important;
           }
+
+          .platform-select option {
+            background-color: ${isLightMode ? '#FFFFFF' : '#1F2937'} !important;
+            color: ${isLightMode ? '#1F2937' : '#E5E7EB'} !important;
+            padding: 10px !important;
+            border: 1px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.2)'} !important;
+          }
+
+          .platform-select option:hover {
+            background-color: ${isLightMode ? '#F3F4F6' : '#374151'} !important;
+          }
+
+          .platform-select option:checked {
+            background-color: ${isLightMode ? '#4ECDC4' : '#4ECDC4'} !important;
+            color: white !important;
+          }
         `}
       </style>
       <div style={{
@@ -490,12 +506,18 @@ function Post({ onBack, onProfile }) {
                     </label>
                     <select
                       name="platform"
-                      value={formData.platform}
-                      onChange={handleInputChange}
-                      className="form-control"
+                      value={formData.platform === 'Other' || !['Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) ? (formData.platform && formData.platform !== '' ? 'Other' : formData.platform) : formData.platform}
+                      onChange={(e) => {
+                        if (e.target.value === 'Other') {
+                          setFormData(prev => ({ ...prev, platform: '' }));
+                        } else {
+                          handleInputChange(e);
+                        }
+                      }}
+                      className="form-control platform-select"
                       style={{
                         backgroundColor: theme.statsCardBg,
-                        border: `2px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.2)'}`,
+                        border: `1px solid ${theme.border}`,
                         color: formData.platform ? theme.textPrimary : 'rgba(255, 255, 255, 0.5)',
                         height: '48px',
                         borderRadius: '12px',
@@ -503,14 +525,15 @@ function Post({ onBack, onProfile }) {
                         fontSize: '1rem',
                         transition: 'all 0.3s ease',
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        display: formData.platform && !['', 'Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) ? 'none' : 'block'
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#4ECDC4';
                         e.target.style.boxShadow = '0 4px 15px rgba(78, 205, 196, 0.3)';
                       }}
                       onBlur={(e) => {
-                        e.target.style.border = `2px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.2)'}`;
+                        e.target.style.borderColor = theme.border;
                         e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                       }}
                     >
@@ -521,6 +544,64 @@ function Post({ onBack, onProfile }) {
                       <option value="Desktop Application">Desktop Application</option>
                       <option value="Other">Other</option>
                     </select>
+                    {formData.platform && !['Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) && (
+                      <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="text"
+                          name="platform"
+                          value={formData.platform}
+                          onChange={handleInputChange}
+                          placeholder="Enter your platform..."
+                          className="form-control post-input"
+                          style={{
+                            backgroundColor: theme.statsCardBg,
+                            border: `1px solid ${theme.border}`,
+                            color: theme.textPrimary,
+                            height: '48px',
+                            borderRadius: '12px',
+                            padding: '0 18px',
+                            fontSize: '1rem',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                            flex: 1
+                          }}
+                          onFocus={(e) => {
+                            e.target.style.borderColor = '#4ECDC4';
+                            e.target.style.boxShadow = '0 4px 15px rgba(78, 205, 196, 0.3)';
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.borderColor = theme.border;
+                            e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, platform: '' }))}
+                          style={{
+                            background: 'rgba(255, 107, 107, 0.2)',
+                            border: '1px solid rgba(255, 107, 107, 0.4)',
+                            color: '#FF6B6B',
+                            borderRadius: '8px',
+                            padding: '8px 12px',
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: '500',
+                            transition: 'all 0.2s ease',
+                            whiteSpace: 'nowrap'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.background = 'rgba(255, 107, 107, 0.3)';
+                            e.target.style.transform = 'scale(1.05)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.background = 'rgba(255, 107, 107, 0.2)';
+                            e.target.style.transform = 'scale(1)';
+                          }}
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
