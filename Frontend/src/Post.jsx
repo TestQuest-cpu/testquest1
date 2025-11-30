@@ -189,7 +189,7 @@ function Post({ onBack, onProfile }) {
       <style>
         {`
           .post-input::placeholder {
-            color: rgba(255, 255, 255, 0.6) !important;
+            color: ${isLightMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.6)'} !important;
             opacity: 1 !important;
           }
 
@@ -587,7 +587,14 @@ function Post({ onBack, onProfile }) {
                           </svg>
                         </div>
                         {isPlatformDropdownOpen && (
-                          <div className="custom-dropdown-menu">
+                          <div
+                            className="custom-dropdown-menu"
+                            style={{
+                              backgroundColor: isLightMode ? '#FFFFFF' : '#1F2937',
+                              border: `2px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.3)'}`,
+                              borderRadius: '12px'
+                            }}
+                          >
                             <div
                               className="custom-dropdown-option"
                               onClick={() => {
