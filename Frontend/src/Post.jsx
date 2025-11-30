@@ -363,7 +363,7 @@ function Post({ onBack, onProfile }) {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="form-control"
+                className="form-control post-input"
                 placeholder="Enter your project name"
                 style={{
                   backgroundColor: theme.statsCardBg,
@@ -495,8 +495,8 @@ function Post({ onBack, onProfile }) {
                       className="form-control"
                       style={{
                         backgroundColor: theme.statsCardBg,
-                        border: `1px solid ${theme.border}`,
-                        color: theme.textPrimary,
+                        border: `2px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.2)'}`,
+                        color: formData.platform ? theme.textPrimary : 'rgba(255, 255, 255, 0.5)',
                         height: '48px',
                         borderRadius: '12px',
                         padding: '0 18px',
@@ -510,7 +510,7 @@ function Post({ onBack, onProfile }) {
                         e.target.style.boxShadow = '0 4px 15px rgba(78, 205, 196, 0.3)';
                       }}
                       onBlur={(e) => {
-                        e.target.style.borderColor = theme.border;
+                        e.target.style.border = `2px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.2)'}`;
                         e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                       }}
                     >
@@ -573,7 +573,7 @@ function Post({ onBack, onProfile }) {
                 name="objective"
                 value={formData.objective}
                 onChange={handleInputChange}
-                className="form-control"
+                className="form-control post-input"
                 placeholder="Describe what you want testers to focus on..."
                 style={{
                   backgroundColor: theme.statsCardBg,
@@ -605,7 +605,7 @@ function Post({ onBack, onProfile }) {
                 name="areasToTest"
                 value={formData.areasToTest}
                 onChange={handleInputChange}
-                className="form-control"
+                className="form-control post-input"
                 placeholder="List specific features, pages, or functionalities to test..."
                 style={{
                   backgroundColor: theme.statsCardBg,
@@ -795,7 +795,7 @@ function Post({ onBack, onProfile }) {
                 name="notes"
                 value={formData.notes}
                 onChange={handleInputChange}
-                className="form-control"
+                className="form-control post-input"
                 placeholder="Any additional information or special instructions..."
                 style={{
                   backgroundColor: theme.statsCardBg,
@@ -833,7 +833,7 @@ function Post({ onBack, onProfile }) {
                 min="20"
                 step="0.01"
                 placeholder="20.00"
-                className="form-control"
+                className="form-control post-input"
                 style={{
                   backgroundColor: theme.statsCardBg,
                   border: `1px solid ${theme.border}`,
