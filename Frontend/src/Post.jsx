@@ -38,6 +38,7 @@ function Post({ onBack, onProfile }) {
   const [showPayment, setShowPayment] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [showSeverityGuide, setShowSeverityGuide] = useState(false);
+  const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -191,20 +192,60 @@ function Post({ onBack, onProfile }) {
             opacity: 1 !important;
           }
 
-          .platform-select option {
-            background-color: ${isLightMode ? '#FFFFFF' : '#1F2937'} !important;
-            color: ${isLightMode ? '#1F2937' : '#E5E7EB'} !important;
-            padding: 10px !important;
-            border: 1px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.2)'} !important;
+          /* Custom dropdown menu styling */
+          .custom-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: ${isLightMode ? '#FFFFFF' : '#1F2937'};
+            border: 2px solid ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.3)'};
+            border-radius: 12px;
+            margin-top: 4px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
           }
 
-          .platform-select option:hover {
-            background-color: ${isLightMode ? '#F3F4F6' : '#374151'} !important;
+          .custom-dropdown-option {
+            padding: 12px 18px;
+            cursor: pointer;
+            color: ${isLightMode ? '#1F2937' : '#E5E7EB'};
+            transition: background-color 0.2s ease;
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
           }
 
-          .platform-select option:checked {
-            background-color: ${isLightMode ? '#4ECDC4' : '#4ECDC4'} !important;
-            color: white !important;
+          .custom-dropdown-option:hover {
+            background-color: ${isLightMode ? '#F3F4F6' : '#374151'};
+          }
+
+          .custom-dropdown-option:first-child {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+          }
+
+          .custom-dropdown-option:last-child {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+          }
+
+          .custom-dropdown-menu::-webkit-scrollbar {
+            width: 8px;
+          }
+
+          .custom-dropdown-menu::-webkit-scrollbar-track {
+            background: transparent;
+          }
+
+          .custom-dropdown-menu::-webkit-scrollbar-thumb {
+            background: ${isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.2)'};
+            border-radius: 4px;
+          }
+
+          .custom-dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: ${isLightMode ? '#9CA3AF' : 'rgba(255, 255, 255, 0.3)'};
           }
         `}
       </style>
@@ -500,51 +541,112 @@ function Post({ onBack, onProfile }) {
                       readOnly
                     />
                   </div>
-                  <div className="mb-2">
+                  <div className="mb-2" style={{ position: 'relative' }}>
                     <label style={{ fontSize: '0.9rem', color: theme.textPrimary, display: 'block', marginBottom: '4px', fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>
                       <strong>Platform:</strong>
                     </label>
-                    <select
-                      name="platform"
-                      value={formData.platform === 'Other' || !['Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) ? (formData.platform && formData.platform !== '' ? 'Other' : formData.platform) : formData.platform}
-                      onChange={(e) => {
-                        if (e.target.value === 'Other') {
-                          setFormData(prev => ({ ...prev, platform: '' }));
-                        } else {
-                          handleInputChange(e);
-                        }
-                      }}
-                      className="form-control platform-select"
-                      style={{
-                        backgroundColor: theme.statsCardBg,
-                        border: `1px solid ${theme.border}`,
-                        color: formData.platform ? theme.textPrimary : 'rgba(255, 255, 255, 0.5)',
-                        height: '48px',
-                        borderRadius: '12px',
-                        padding: '0 18px',
-                        fontSize: '1rem',
-                        transition: 'all 0.3s ease',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                        cursor: 'pointer',
-                        display: formData.platform && !['', 'Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) ? 'none' : 'block'
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = '#4ECDC4';
-                        e.target.style.boxShadow = '0 4px 15px rgba(78, 205, 196, 0.3)';
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = theme.border;
-                        e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
-                      }}
-                    >
-                      <option value="">Select platform...</option>
-                      <option value="Web Application">Web Application</option>
-                      <option value="Mobile App (iOS)">Mobile App (iOS)</option>
-                      <option value="Mobile App (Android)">Mobile App (Android)</option>
-                      <option value="Desktop Application">Desktop Application</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    {formData.platform && !['Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) && (
+                    {/* Custom Dropdown */}
+                    {['', 'Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) ? (
+                      <div style={{ position: 'relative' }}>
+                        <div
+                          onClick={() => setIsPlatformDropdownOpen(!isPlatformDropdownOpen)}
+                          onBlur={() => setTimeout(() => setIsPlatformDropdownOpen(false), 200)}
+                          tabIndex={0}
+                          style={{
+                            backgroundColor: theme.statsCardBg,
+                            border: `1px solid ${isPlatformDropdownOpen ? '#4ECDC4' : theme.border}`,
+                            color: formData.platform ? theme.textPrimary : 'rgba(255, 255, 255, 0.5)',
+                            height: '48px',
+                            borderRadius: '12px',
+                            padding: '0 40px 0 18px',
+                            fontSize: '1rem',
+                            transition: 'all 0.3s ease',
+                            boxShadow: isPlatformDropdownOpen ? '0 4px 15px rgba(78, 205, 196, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.2)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            position: 'relative',
+                            userSelect: 'none'
+                          }}
+                        >
+                          {formData.platform || 'Select platform...'}
+                          <svg
+                            style={{
+                              position: 'absolute',
+                              right: '18px',
+                              width: '12px',
+                              height: '12px',
+                              transition: 'transform 0.3s ease',
+                              transform: isPlatformDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                            }}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 12 12"
+                          >
+                            <path fill="#E5E7EB" d="M6 9L1 4h10z"/>
+                          </svg>
+                        </div>
+                        {isPlatformDropdownOpen && (
+                          <div className="custom-dropdown-menu">
+                            <div
+                              className="custom-dropdown-option"
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, platform: '' }));
+                                setIsPlatformDropdownOpen(false);
+                              }}
+                              style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                            >
+                              Select platform...
+                            </div>
+                            <div
+                              className="custom-dropdown-option"
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, platform: 'Web Application' }));
+                                setIsPlatformDropdownOpen(false);
+                              }}
+                            >
+                              Web Application
+                            </div>
+                            <div
+                              className="custom-dropdown-option"
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, platform: 'Mobile App (iOS)' }));
+                                setIsPlatformDropdownOpen(false);
+                              }}
+                            >
+                              Mobile App (iOS)
+                            </div>
+                            <div
+                              className="custom-dropdown-option"
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, platform: 'Mobile App (Android)' }));
+                                setIsPlatformDropdownOpen(false);
+                              }}
+                            >
+                              Mobile App (Android)
+                            </div>
+                            <div
+                              className="custom-dropdown-option"
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, platform: 'Desktop Application' }));
+                                setIsPlatformDropdownOpen(false);
+                              }}
+                            >
+                              Desktop Application
+                            </div>
+                            <div
+                              className="custom-dropdown-option"
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, platform: 'Custom' }));
+                                setIsPlatformDropdownOpen(false);
+                              }}
+                            >
+                              Other
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
+                    {!['', 'Web Application', 'Mobile App (iOS)', 'Mobile App (Android)', 'Desktop Application'].includes(formData.platform) && (
                       <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <input
                           type="text"
