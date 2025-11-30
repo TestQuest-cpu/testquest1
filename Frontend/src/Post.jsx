@@ -116,6 +116,7 @@ function Post({ onBack, onProfile }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     
     if (!formData.acceptedTerms) {
       setError('Please accept the terms and conditions');
@@ -357,12 +358,13 @@ function Post({ onBack, onProfile }) {
             {/* Project Name Section */}
             <div className="mb-4">
               <label className="form-label mb-2" style={{ fontSize: '1rem', fontWeight: '500', color: theme.textPrimary, fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>Project Name:</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
                 className="form-control"
+                placeholder="Enter your project name"
                 style={{
                   backgroundColor: theme.statsCardBg,
                   border: `1px solid ${theme.border}`,
@@ -382,7 +384,6 @@ function Post({ onBack, onProfile }) {
                   e.target.style.borderColor = theme.border;
                   e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                 }}
-                required
               />
             </div>
 
@@ -487,8 +488,7 @@ function Post({ onBack, onProfile }) {
                     <label style={{ fontSize: '0.9rem', color: theme.textPrimary, display: 'block', marginBottom: '4px', fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>
                       <strong>Platform:</strong>
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="platform"
                       value={formData.platform}
                       onChange={handleInputChange}
@@ -502,7 +502,8 @@ function Post({ onBack, onProfile }) {
                         padding: '0 18px',
                         fontSize: '1rem',
                         transition: 'all 0.3s ease',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                        cursor: 'pointer'
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#4ECDC4';
@@ -512,8 +513,14 @@ function Post({ onBack, onProfile }) {
                         e.target.style.borderColor = theme.border;
                         e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                       }}
-                      required
-                    />
+                    >
+                      <option value="">Select platform...</option>
+                      <option value="Web Application">Web Application</option>
+                      <option value="Mobile App (iOS)">Mobile App (iOS)</option>
+                      <option value="Mobile App (Android)">Mobile App (Android)</option>
+                      <option value="Desktop Application">Desktop Application</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -555,7 +562,6 @@ function Post({ onBack, onProfile }) {
                     e.target.style.borderColor = theme.border;
                     e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                   }}
-                  required
                 />
               </div>
             </div>
@@ -568,6 +574,7 @@ function Post({ onBack, onProfile }) {
                 value={formData.objective}
                 onChange={handleInputChange}
                 className="form-control"
+                placeholder="Describe what you want testers to focus on..."
                 style={{
                   backgroundColor: theme.statsCardBg,
                   border: `1px solid ${theme.border}`,
@@ -588,7 +595,6 @@ function Post({ onBack, onProfile }) {
                   e.target.style.borderColor = theme.border;
                   e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                 }}
-                required
               />
             </div>
 
@@ -600,6 +606,7 @@ function Post({ onBack, onProfile }) {
                 value={formData.areasToTest}
                 onChange={handleInputChange}
                 className="form-control"
+                placeholder="List specific features, pages, or functionalities to test..."
                 style={{
                   backgroundColor: theme.statsCardBg,
                   border: `1px solid ${theme.border}`,
@@ -620,7 +627,6 @@ function Post({ onBack, onProfile }) {
                   e.target.style.borderColor = theme.border;
                   e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                 }}
-                required
               />
             </div>
           </div>
@@ -784,12 +790,13 @@ function Post({ onBack, onProfile }) {
 
             {/* Notes Section */}
             <div className="mb-3">
-              <label className="form-label mb-2" style={{ fontSize: '1rem', fontWeight: '500', color: theme.textPrimary, marginTop: '45px', fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>Notes:</label>
+              <label className="form-label mb-2" style={{ fontSize: '1rem', fontWeight: '500', color: theme.textPrimary, marginTop: '45px', fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>Notes (Optional):</label>
               <textarea
                 name="notes"
                 value={formData.notes}
                 onChange={handleInputChange}
                 className="form-control"
+                placeholder="Any additional information or special instructions..."
                 style={{
                   backgroundColor: theme.statsCardBg,
                   border: `1px solid ${theme.border}`,
@@ -846,7 +853,6 @@ function Post({ onBack, onProfile }) {
                   e.target.style.borderColor = theme.border;
                   e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                 }}
-                required
               />
 
               {/* Fee Breakdown Display */}
@@ -924,9 +930,8 @@ function Post({ onBack, onProfile }) {
                   marginRight: '8px',
                   cursor: 'pointer'
                 }}
-                required
               />
-              <label style={{ fontSize: '0.8rem', color: theme.textPrimary, fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>
+              <label style={{ fontSize: '0.8rem', color: theme.textPrimary, fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease', cursor: 'pointer' }}>
                 I confirm that I have read and accept the terms and conditions and privacy policy.
               </label>
             </div>
