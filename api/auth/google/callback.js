@@ -104,7 +104,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { code } = req.query;
+    const { code, state } = req.query;
 
     // Get the actual domain from the request headers
     const host = req.headers.host;
@@ -115,9 +115,20 @@ export default async function handler(req, res) {
       return res.redirect(`${baseUrl}?error=no_code`);
     }
 
+    // Decode state parameter to get accountType
+    let accountType = 'tester'; // Default
+    if (state) {
+      try {
+        const decodedState = JSON.parse(Buffer.from(state, 'base64').toString());
+        accountType = decodedState.accountType || 'tester';
+      } catch (e) {
+        console.error('Failed to decode state parameter:', e);
+      }
+    }
+
     // Exchange code for access token
     const tokenData = await exchangeCodeForToken(code, baseUrl);
-    
+
     if (tokenData.error) {
       return res.redirect(`${baseUrl}?error=token_error`);
     }
@@ -131,12 +142,12 @@ export default async function handler(req, res) {
     let user = await User.findOne({ email: googleUser.email });
 
     if (!user) {
-      // Create new user - default to tester account type
+      // Create new user with the accountType from state
       user = new User({
         name: googleUser.name,
         email: googleUser.email,
         password: 'oauth_user', // Placeholder for OAuth users
-        accountType: 'tester', // Default account type
+        accountType: accountType,
         googleId: googleUser.id,
         avatar: googleUser.picture,
         isEmailVerified: true

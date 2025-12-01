@@ -115,7 +115,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { code } = req.query;
+    const { code, state } = req.query;
 
     // Get the actual domain from the request headers
     const host = req.headers.host;
@@ -124,6 +124,17 @@ export default async function handler(req, res) {
 
     if (!code) {
       return res.redirect(`${baseUrl}?error=no_code`);
+    }
+
+    // Decode state parameter to get accountType
+    let accountType = 'tester'; // Default
+    if (state) {
+      try {
+        const decodedState = JSON.parse(Buffer.from(state, 'base64').toString());
+        accountType = decodedState.accountType || 'tester';
+      } catch (e) {
+        console.error('Failed to decode state parameter:', e);
+      }
     }
 
     // Exchange code for access token
@@ -142,12 +153,12 @@ export default async function handler(req, res) {
     let user = await User.findOne({ email: githubUser.email });
 
     if (!user) {
-      // Create new user - default to developer account type for GitHub users
+      // Create new user with the accountType from state
       user = new User({
         name: githubUser.name || githubUser.login,
         email: githubUser.email,
         password: 'oauth_user', // Placeholder for OAuth users
-        accountType: 'developer', // Default account type for GitHub users
+        accountType: accountType,
         githubId: githubUser.id,
         avatar: githubUser.avatar_url,
         isEmailVerified: true
