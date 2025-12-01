@@ -40,11 +40,25 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET &&
     });
 
     if (user) {
-      // Update Google ID if user exists with email but no Google ID
+      // Update Google ID and accountType if user exists with email but no Google ID
+      let needsUpdate = false;
+
       if (!user.googleId) {
         user.googleId = profile.id;
+        needsUpdate = true;
+      }
+
+      // Update accountType if different from session
+      const sessionAccountType = req.session?.accountType;
+      if (sessionAccountType && user.accountType !== sessionAccountType) {
+        user.accountType = sessionAccountType;
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
         await user.save();
       }
+
       return done(null, user);
     }
 
@@ -106,11 +120,25 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET &&
     });
 
     if (user) {
-      // Update GitHub ID if user exists with email but no GitHub ID
+      // Update GitHub ID and accountType if user exists with email but no GitHub ID
+      let needsUpdate = false;
+
       if (!user.githubId) {
         user.githubId = profile.id;
+        needsUpdate = true;
+      }
+
+      // Update accountType if different from session
+      const sessionAccountType = req.session?.accountType;
+      if (sessionAccountType && user.accountType !== sessionAccountType) {
+        user.accountType = sessionAccountType;
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
         await user.save();
       }
+
       return done(null, user);
     }
 

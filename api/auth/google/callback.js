@@ -154,11 +154,23 @@ export default async function handler(req, res) {
       });
       await user.save();
     } else {
-      // Update existing user with Google ID if not set
+      // Update existing user with Google ID and accountType if not set
+      let needsUpdate = false;
+
       if (!user.googleId) {
         user.googleId = googleUser.id;
         user.avatar = googleUser.picture;
         user.isEmailVerified = true;
+        needsUpdate = true;
+      }
+
+      // Update accountType if different from the one selected
+      if (accountType && user.accountType !== accountType) {
+        user.accountType = accountType;
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
         await user.save();
       }
     }

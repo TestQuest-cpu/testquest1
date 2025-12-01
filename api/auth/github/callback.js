@@ -165,11 +165,23 @@ export default async function handler(req, res) {
       });
       await user.save();
     } else {
-      // Update existing user with GitHub ID if not set
+      // Update existing user with GitHub ID and accountType if not set
+      let needsUpdate = false;
+
       if (!user.githubId) {
         user.githubId = githubUser.id;
         user.avatar = githubUser.avatar_url;
         user.isEmailVerified = true;
+        needsUpdate = true;
+      }
+
+      // Update accountType if different from the one selected
+      if (accountType && user.accountType !== accountType) {
+        user.accountType = accountType;
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
         await user.save();
       }
     }
