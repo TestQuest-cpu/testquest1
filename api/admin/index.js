@@ -510,12 +510,56 @@ async function handleProjectApproval(req, res) {
       project.status = 'rejected';
       project.rejectedAt = new Date();
       project.rejectionReason = req.body.reason || 'No reason provided';
+      project.rejectionCategory = req.body.category || 'other';
     }
 
     await project.save();
 
+    // Handle penalty deposit refund
+    const penaltyCategories = ['prohibited_content', 'misleading_information', 'repeated_submission'];
+    const shouldRefundDeposit = action === 'approve' || !penaltyCategories.includes(project.rejectionCategory);
+
+    let refundMessage = '';
+    if (shouldRefundDeposit && project.paypalPaymentId && !project.penaltyRefunded) {
+      try {
+        // Import PayPal utilities
+        const { getPayPalAccessToken, refundPayPalCapture } = require('../payments/index.js');
+
+        const paypalClient = {
+          clientId: process.env.PAYPAL_CLIENT_ID,
+          clientSecret: process.env.PAYPAL_CLIENT_SECRET,
+          baseURL: 'https://api-m.sandbox.paypal.com'
+        };
+
+        const accessToken = await getPayPalAccessToken(
+          paypalClient.clientId,
+          paypalClient.clientSecret,
+          paypalClient.baseURL
+        );
+
+        const refundResponse = await refundPayPalCapture(
+          project.paypalPaymentId,
+          project.penaltyDeposit,
+          accessToken,
+          paypalClient.baseURL
+        );
+
+        project.penaltyRefunded = true;
+        project.penaltyRefundId = refundResponse.id;
+        await project.save();
+
+        refundMessage = ` $${project.penaltyDeposit} penalty deposit refunded.`;
+        console.log(`Penalty deposit refunded for project ${project._id}: ${refundResponse.id}`);
+      } catch (refundError) {
+        console.error('Penalty deposit refund failed:', refundError);
+        refundMessage = ' (Penalty deposit refund failed - manual processing required)';
+      }
+    } else if (!shouldRefundDeposit) {
+      refundMessage = ` $${project.penaltyDeposit} penalty applied for policy violation.`;
+    }
+
     res.json({
-      message: `Project ${action}d successfully`,
+      message: `Project ${action}d successfully.${refundMessage}`,
       project: {
         id: project._id,
         name: project.name,
@@ -523,7 +567,9 @@ async function handleProjectApproval(req, res) {
         approvedBy: action === 'approve' ? admin.username : undefined,
         approvedAt: project.approvedAt,
         rejectedAt: project.rejectedAt,
-        rejectionReason: project.rejectionReason
+        rejectionReason: project.rejectionReason,
+        rejectionCategory: project.rejectionCategory,
+        penaltyRefunded: project.penaltyRefunded
       }
     });
 

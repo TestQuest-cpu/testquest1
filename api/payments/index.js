@@ -117,6 +117,33 @@ async function sendPayPalPayout(payoutData, accessToken, baseURL) {
   return await response.json();
 }
 
+// Refund PayPal capture
+async function refundPayPalCapture(captureId, amount, accessToken, baseURL) {
+  const refundData = {
+    amount: {
+      value: amount.toFixed(2),
+      currency_code: 'USD'
+    }
+  };
+
+  const response = await fetch(`${baseURL}/v2/payments/captures/${captureId}/refund`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(refundData)
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('PayPal refund failed:', errorText);
+    throw new Error(`PayPal refund failed: ${response.status} ${errorText}`);
+  }
+
+  return await response.json();
+}
+
 const PAYPAL_CONFIG = {
   CREDITS_PER_USD: 1, // 1 credits = 1 USD
   MIN_WITHDRAWAL_CREDITS: 500, // 500 credits = $5 USD minimum withdrawal
@@ -401,12 +428,14 @@ module.exports = async (req, res) => {
 
         console.log('Creating PayPal order for project:', projectData.name);
 
-        // totalBounty is now totalBudget - charge only this amount
+        // totalBounty is now totalBudget - charge this amount + $2 penalty deposit
         // Platform fee (15%) is already included and will be calculated after payment
-        const totalAmount = parseFloat(totalBounty);
+        const penaltyDeposit = 2.00;
+        const totalBudget = parseFloat(totalBounty);
+        const totalAmount = totalBudget + penaltyDeposit; // Add $2 penalty deposit
         const platformFeePercentage = 15;
-        const platformFee = Math.round(totalAmount * (platformFeePercentage / 100) * 100) / 100;
-        const bountyPool = Math.round((totalAmount - platformFee) * 100) / 100;
+        const platformFee = Math.round(totalBudget * (platformFeePercentage / 100) * 100) / 100;
+        const bountyPool = Math.round((totalBudget - platformFee) * 100) / 100;
 
         const returnUrl = `${PAYPAL_CONFIG.RETURN_URL}/payment-success`;
         const cancelUrl = `${PAYPAL_CONFIG.CANCEL_URL}/payment-cancelled`;
@@ -427,7 +456,7 @@ module.exports = async (req, res) => {
             },
             items: [{
               name: `Bug Bounty Project: ${projectData.name}`,
-              description: `Total Budget: $${totalAmount} (Bounty Pool: $${bountyPool}, Platform Fee: $${platformFee})`,
+              description: `Budget: $${totalBudget} (Bounty: $${bountyPool}, Platform Fee: $${platformFee}) + $2.00 Penalty Deposit (refundable)`,
               unit_amount: {
                 currency_code: PAYPAL_CONFIG.CURRENCY,
                 value: totalAmount.toFixed(2)
@@ -463,7 +492,8 @@ module.exports = async (req, res) => {
           orderID: response.id,
           totalAmount: totalAmount,
           platformFee: platformFee,
-          message: 'Payment required before project creation'
+          penaltyDeposit: penaltyDeposit,
+          message: 'Payment required before project creation (includes $2 refundable penalty deposit)'
         });
 
       } else if (action === 'create-payment-order') {
@@ -794,9 +824,13 @@ module.exports = async (req, res) => {
       name: error.name,
       code: error.code
     });
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: error.message,
       error: process.env.NODE_ENV !== 'production' ? error.stack : 'Server error'
     });
   }
 };
+
+// Export utility functions for use in other modules
+module.exports.getPayPalAccessToken = getPayPalAccessToken;
+module.exports.refundPayPalCapture = refundPayPalCapture;

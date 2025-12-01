@@ -15,7 +15,10 @@ const PayPalPayment = ({
 
   // totalBounty is now the full budget amount to charge
   // Platform fee (15%) will be calculated on the backend
-  const totalAmount = parseFloat(totalBounty);
+  // $2 penalty deposit is added to the total charge
+  const penaltyDeposit = 2.00;
+  const budgetAmount = parseFloat(totalBounty);
+  const totalAmount = budgetAmount + penaltyDeposit;
 
   useEffect(() => {
     let attempts = 0;
@@ -312,7 +315,7 @@ const PayPalPayment = ({
               fontSize: '1rem',
               fontFamily: 'DM Sans, sans-serif'
             }}>
-              Bug Bounty Amount:
+              Bug Bounty Budget:
             </span>
             <span style={{
               color: 'white',
@@ -320,7 +323,7 @@ const PayPalPayment = ({
               fontWeight: '500',
               fontFamily: 'DM Sans, sans-serif'
             }}>
-              ${totalBounty}
+              ${budgetAmount.toFixed(2)}
             </span>
           </div>
 
@@ -343,7 +346,37 @@ const PayPalPayment = ({
               fontWeight: '500',
               fontFamily: 'DM Sans, sans-serif'
             }}>
-              ${(totalAmount * 0.15).toFixed(2)}
+              ${(budgetAmount * 0.15).toFixed(2)}
+            </span>
+          </div>
+
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '12px'
+          }}>
+            <span style={{
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontSize: '1rem',
+              fontFamily: 'DM Sans, sans-serif'
+            }}>
+              Processing Fee Deposit:
+              <span style={{
+                fontSize: '0.8rem',
+                color: 'rgba(102, 126, 234, 0.8)',
+                marginLeft: '8px'
+              }}>
+                (refundable)
+              </span>
+            </span>
+            <span style={{
+              color: 'white',
+              fontSize: '1.1rem',
+              fontWeight: '500',
+              fontFamily: 'DM Sans, sans-serif'
+            }}>
+              ${penaltyDeposit.toFixed(2)}
             </span>
           </div>
 
@@ -391,8 +424,8 @@ const PayPalPayment = ({
             lineHeight: '1.5',
             fontFamily: 'DM Sans, sans-serif'
           }}>
-            💡 <strong>How it works:</strong> Your ${totalAmount} payment will be converted to {(totalAmount * 100 * 0.85).toFixed(0)} credits for bug rewards.
-            The ${(totalAmount * 0.15).toFixed(2)} platform fee (15%) helps us maintain and improve TestQuest.
+            💡 <strong>How it works:</strong> Your ${budgetAmount.toFixed(2)} budget will be converted to {(budgetAmount * 100 * 0.85).toFixed(0)} credits for bug rewards.
+            The ${(budgetAmount * 0.15).toFixed(2)} platform fee (15%) helps us maintain TestQuest. The $2.00 processing fee deposit is <strong>fully refundable</strong> when your project is approved, or if rejected for quality reasons. It's only kept if your project violates our policies.
           </p>
         </div>
       </div>

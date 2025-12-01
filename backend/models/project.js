@@ -106,6 +106,21 @@ const projectSchema = new mongoose.Schema({
   rejectionReason: {
     type: String
   },
+  rejectionCategory: {
+    type: String,
+    enum: ['prohibited_content', 'misleading_information', 'repeated_submission', 'insufficient_quality', 'other']
+  },
+  penaltyDeposit: {
+    type: Number,
+    default: 2.00 // $2 processing fee deposit
+  },
+  penaltyRefunded: {
+    type: Boolean,
+    default: false
+  },
+  penaltyRefundId: {
+    type: String // PayPal refund transaction ID
+  },
   completedAt: {
     type: Date
   },
