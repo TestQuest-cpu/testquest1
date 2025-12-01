@@ -108,9 +108,11 @@ router.get('/me', async (req, res) => {
 });
 
 // Google OAuth routes
-router.get('/google', 
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
+router.get('/google', (req, res, next) => {
+  // Store accountType in session to retrieve after OAuth callback
+  req.session.accountType = req.query.accountType || 'tester';
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
 
 router.get('/google/callback',
   passport.authenticate('google', { session: false }),
@@ -134,9 +136,11 @@ router.get('/google/callback',
 );
 
 // GitHub OAuth routes
-router.get('/github',
-  passport.authenticate('github', { scope: ['user:email'] })
-);
+router.get('/github', (req, res, next) => {
+  // Store accountType in session to retrieve after OAuth callback
+  req.session.accountType = req.query.accountType || 'tester';
+  passport.authenticate('github', { scope: ['user:email'] })(req, res, next);
+});
 
 router.get('/github/callback',
   passport.authenticate('github', { session: false }),

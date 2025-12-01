@@ -5,24 +5,27 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 
 // Only initialize Google OAuth if credentials are provided
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && 
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET &&
     process.env.GOOGLE_CLIENT_ID !== 'your-google-client-id-here') {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: `/api/auth/google/callback`
-  }, async (accessToken, refreshToken, profile, done) => {
+    callbackURL: `/api/auth/google/callback`,
+    passReqToCallback: true
+  }, async (req, accessToken, refreshToken, profile, done) => {
   try {
     // Check if MongoDB is connected
     if (mongoose.connection.readyState !== 1) {
       console.log('MongoDB not connected, creating temporary user session');
+      // Get accountType from session, default to 'tester'
+      const accountType = req.session?.accountType || 'tester';
       // Return a temporary user object for OAuth success without DB
       return done(null, {
         _id: 'temp_' + profile.id,
         googleId: profile.id,
         name: profile.displayName,
         email: profile.emails[0].value,
-        accountType: 'tester',
+        accountType: accountType,
         isEmailVerified: true,
         avatar: profile.photos[0]?.value
       });
@@ -45,13 +48,16 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET &&
       return done(null, user);
     }
 
+    // Get accountType from session, default to 'tester'
+    const accountType = req.session?.accountType || 'tester';
+
     // Create new user
     const newUser = new User({
       googleId: profile.id,
       name: profile.displayName,
       email: profile.emails[0].value,
       password: 'oauth_user_' + Date.now(), // Temporary password for OAuth users
-      accountType: 'tester', // Default to tester, can be changed later
+      accountType: accountType,
       isEmailVerified: true,
       avatar: profile.photos[0]?.value
     });
@@ -65,24 +71,27 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET &&
 }
 
 // Only initialize GitHub OAuth if credentials are provided
-if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET && 
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET &&
     process.env.GITHUB_CLIENT_ID !== 'your-github-client-id-here') {
   passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: `/api/auth/github/callback`
-  }, async (accessToken, refreshToken, profile, done) => {
+    callbackURL: `/api/auth/github/callback`,
+    passReqToCallback: true
+  }, async (req, accessToken, refreshToken, profile, done) => {
   try {
     // Check if MongoDB is connected
     if (mongoose.connection.readyState !== 1) {
       console.log('MongoDB not connected, creating temporary user session');
+      // Get accountType from session, default to 'tester'
+      const accountType = req.session?.accountType || 'tester';
       // Return a temporary user object for OAuth success without DB
       return done(null, {
         _id: 'temp_' + profile.id,
         githubId: profile.id,
         name: profile.displayName || profile.username,
         email: profile.emails?.[0]?.value || `${profile.username}@github.local`,
-        accountType: 'developer',
+        accountType: accountType,
         isEmailVerified: true,
         avatar: profile.photos[0]?.value
       });
@@ -105,13 +114,16 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET &&
       return done(null, user);
     }
 
+    // Get accountType from session, default to 'tester'
+    const accountType = req.session?.accountType || 'tester';
+
     // Create new user
     const newUser = new User({
       githubId: profile.id,
       name: profile.displayName || profile.username,
       email: profile.emails?.[0]?.value || `${profile.username}@github.local`,
       password: 'oauth_user_' + Date.now(), // Temporary password for OAuth users
-      accountType: 'developer', // Default to developer for GitHub users
+      accountType: accountType,
       isEmailVerified: true,
       avatar: profile.photos[0]?.value
     });
