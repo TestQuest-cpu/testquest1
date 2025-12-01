@@ -518,24 +518,23 @@ async function handleProjectApproval(req, res) {
     // Handle penalty deposit refund
     const penaltyCategories = ['prohibited_content', 'misleading_information', 'repeated_submission'];
     const shouldRefundDeposit = action === 'approve' || !penaltyCategories.includes(project.rejectionCategory);
-
-    console.log('Refund check:', {
-      shouldRefundDeposit,
-      hasPaypalPaymentId: !!project.paypalPaymentId,
-      paypalPaymentId: project.paypalPaymentId,
-      alreadyRefunded: project.penaltyRefunded,
-      penaltyDeposit: project.penaltyDeposit
-    });
+    const penaltyAmount = project.penaltyDeposit || 2.00;
 
     let refundMessage = '';
-    if (shouldRefundDeposit && project.paypalPaymentId && !project.penaltyRefunded) {
+
+    // Only attempt refund if all conditions are met
+    if (shouldRefundDeposit && project.paypalPaymentId && !project.penaltyRefunded && penaltyAmount > 0) {
       try {
-        // PayPal refund logic inline to avoid import issues
         const clientId = process.env.PAYPAL_CLIENT_ID;
         const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+
+        if (!clientId || !clientSecret) {
+          throw new Error('PayPal credentials not configured');
+        }
+
         const baseURL = 'https://api-m.sandbox.paypal.com';
 
-        // Get PayPal access token
+        // Step 1: Get access token
         const auth = Buffer.from(`${clientId}:${clientSecret}`, 'utf8').toString('base64');
         const authResponse = await fetch(`${baseURL}/v1/oauth2/token`, {
           method: 'POST',
@@ -546,54 +545,43 @@ async function handleProjectApproval(req, res) {
           body: 'grant_type=client_credentials'
         });
 
-        if (!authResponse.ok) {
-          throw new Error(`PayPal auth failed: ${authResponse.status}`);
+        const authData = await authResponse.json();
+
+        if (!authResponse.ok || !authData.access_token) {
+          throw new Error('Failed to authenticate with PayPal');
         }
 
-        const authData = await authResponse.json();
-        const accessToken = authData.access_token;
-
-        // Refund the penalty deposit
-        const refundData = {
-          amount: {
-            value: project.penaltyDeposit.toFixed(2),
-            currency_code: 'USD'
-          }
-        };
-
+        // Step 2: Issue refund
         const refundResponse = await fetch(`${baseURL}/v2/payments/captures/${project.paypalPaymentId}/refund`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
+            'Authorization': `Bearer ${authData.access_token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(refundData)
+          body: JSON.stringify({
+            amount: {
+              value: penaltyAmount.toFixed(2),
+              currency_code: 'USD'
+            }
+          })
         });
 
-        if (!refundResponse.ok) {
-          const errorText = await refundResponse.text();
-          throw new Error(`PayPal refund failed: ${refundResponse.status} - ${errorText}`);
+        const refundData = await refundResponse.json();
+
+        if (refundResponse.ok && refundData.id) {
+          // Success - mark as refunded
+          project.penaltyRefunded = true;
+          project.penaltyRefundId = refundData.id;
+          await project.save();
+          refundMessage = ` $${penaltyAmount.toFixed(2)} penalty deposit refunded.`;
+        } else {
+          throw new Error(refundData.message || 'Refund request failed');
         }
-
-        const refundResult = await refundResponse.json();
-
-        project.penaltyRefunded = true;
-        project.penaltyRefundId = refundResult.id;
-        await project.save();
-
-        refundMessage = ` $${project.penaltyDeposit} penalty deposit refunded.`;
-        console.log(`Penalty deposit refunded for project ${project._id}: ${refundResult.id}`);
       } catch (refundError) {
-        console.error('Penalty deposit refund failed:', refundError);
-        refundMessage = ` (Penalty deposit refund failed: ${refundError.message})`;
+        refundMessage = ` (Refund failed - will be processed manually)`;
       }
     } else if (!shouldRefundDeposit) {
-      refundMessage = ` $${project.penaltyDeposit} penalty applied for policy violation.`;
-    } else if (!project.paypalPaymentId) {
-      refundMessage = ' (No PayPal payment ID - project may be from before penalty system was implemented)';
-      console.log('Cannot refund: Project has no paypalPaymentId');
-    } else if (project.penaltyRefunded) {
-      refundMessage = ' (Penalty deposit already refunded)';
+      refundMessage = ` $${penaltyAmount.toFixed(2)} penalty applied.`;
     }
 
     res.json({

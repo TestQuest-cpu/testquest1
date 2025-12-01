@@ -814,8 +814,8 @@ function ProjectsManagement({ theme, isLightMode }) {
         setShowModal(false);
         setSelectedProject(null);
         
-        // Show success message
-        alert(`Project ${action}d successfully! It is now ${data.project.status === 'approved' ? 'live for testers' : 'rejected'}.`);
+        // Show success message from backend (includes refund info)
+        alert(data.message || `Project ${action}d successfully! It is now ${data.project.status === 'approved' ? 'live for testers' : 'rejected'}.`);
         
         // Reload projects to get fresh data
         loadProjects();
