@@ -831,6 +831,8 @@ module.exports = async (req, res) => {
   }
 };
 
-// Export utility functions for use in other modules
-module.exports.getPayPalAccessToken = getPayPalAccessToken;
-module.exports.refundPayPalCapture = refundPayPalCapture;
+// Export utility functions - must be done this way for proper module resolution
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports.getPayPalAccessToken = getPayPalAccessToken;
+  module.exports.refundPayPalCapture = refundPayPalCapture;
+}
