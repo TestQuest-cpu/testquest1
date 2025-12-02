@@ -105,11 +105,28 @@ router.post('/', authenticateToken, requireDeveloper, async (req, res) => {
 // Get all projects (with filtering)
 router.get('/', async (req, res) => {
   try {
-    const { status, page = 1, limit = 10 } = req.query;
-    
+    const { status, page = 1, limit = 10, search, platform, minBudget, maxBudget } = req.query;
+
     let filter = {};
     if (status) {
       filter.status = status;
+    }
+
+    // Search by name
+    if (search) {
+      filter.name = { $regex: search, $options: 'i' };
+    }
+
+    // Filter by platform
+    if (platform) {
+      filter.platform = { $regex: platform, $options: 'i' };
+    }
+
+    // Filter by budget range
+    if (minBudget || maxBudget) {
+      filter.totalBudget = {};
+      if (minBudget) filter.totalBudget.$gte = parseFloat(minBudget);
+      if (maxBudget) filter.totalBudget.$lte = parseFloat(maxBudget);
     }
 
     const projects = await Project.find(filter)

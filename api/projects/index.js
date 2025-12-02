@@ -602,7 +602,7 @@ module.exports = async (req, res) => {
 
     } else if (req.method === 'GET') {
       // Check if this is a specific project request (has 'id' parameter)
-      const { id, leaderboards, status, page = 1, limit = 10, myProjects } = req.query;
+      const { id, leaderboards, status, page = 1, limit = 10, myProjects, search, platform, minBudget, maxBudget } = req.query;
 
       // Handle myProjects query parameter
       if (myProjects === 'true') {
@@ -646,6 +646,23 @@ module.exports = async (req, res) => {
         // By default, only show approved projects to testers
         // Admins/developers can explicitly request other statuses using ?status=pending
         filter.status = 'approved';
+      }
+
+      // Search by name
+      if (search) {
+        filter.name = { $regex: search, $options: 'i' };
+      }
+
+      // Filter by platform
+      if (platform) {
+        filter.platform = { $regex: platform, $options: 'i' };
+      }
+
+      // Filter by budget range
+      if (minBudget || maxBudget) {
+        filter.totalBudget = {};
+        if (minBudget) filter.totalBudget.$gte = parseFloat(minBudget);
+        if (maxBudget) filter.totalBudget.$lte = parseFloat(maxBudget);
       }
 
       const projects = await Project.find(filter)
