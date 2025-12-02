@@ -431,21 +431,6 @@ const PayPalPayment = ({
       </div>
 
       <div ref={paypalRef} style={{ minHeight: '50px' }}></div>
-      
-      {/* Debug info */}
-      {debugInfo && (
-        <div style={{
-          marginTop: '16px',
-          padding: '12px',
-          background: 'rgba(255, 255, 255, 0.03)',
-          borderRadius: '8px',
-          fontSize: '0.8rem',
-          color: 'rgba(255, 255, 255, 0.6)',
-          fontFamily: 'DM Sans, sans-serif'
-        }}>
-          Debug: {debugInfo}
-        </div>
-      )}
 
       {/* Error display */}
       {error && (
