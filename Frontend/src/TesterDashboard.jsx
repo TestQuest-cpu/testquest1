@@ -12,6 +12,10 @@ function TesterDashboard({ onProjectClick, onCategorize, onProfile, onLeaderboar
     const saved = localStorage.getItem('testerLightMode');
     return saved === null ? false : saved === 'true';
   });
+  const [search, setSearch] = useState('');
+  const [platform, setPlatform] = useState('');
+  const [minBudget, setMinBudget] = useState('');
+  const [maxBudget, setMaxBudget] = useState('');
 
   const theme = getTesterTheme(isLightMode);
 
@@ -34,9 +38,22 @@ function TesterDashboard({ onProjectClick, onCategorize, onProfile, onLeaderboar
     };
   }, []);
 
+  useEffect(() => {
+    fetchProjects();
+  }, [search, platform, minBudget, maxBudget]);
+
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/projects`);
+      const params = new URLSearchParams();
+      if (search) params.append('search', search);
+      if (platform) params.append('platform', platform);
+      if (minBudget) params.append('minBudget', minBudget);
+      if (maxBudget) params.append('maxBudget', maxBudget);
+
+      const queryString = params.toString();
+      const url = `${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/projects${queryString ? `?${queryString}` : ''}`;
+
+      const response = await fetch(url);
 
       if (response.ok) {
         const data = await response.json();
@@ -260,6 +277,79 @@ function TesterDashboard({ onProjectClick, onCategorize, onProfile, onLeaderboar
             fontFamily: 'DM Sans, sans-serif',
             transition: 'color 0.3s ease'
           }}>Find and test security vulnerabilities in approved projects</p>
+        </div>
+
+        {/* Search and Filters */}
+        <div style={{
+          background: theme.cardBackground,
+          borderRadius: '12px',
+          border: `1px solid ${theme.border}`,
+          padding: '20px',
+          marginBottom: '30px',
+          display: 'grid',
+          gridTemplateColumns: '2fr 1fr 1fr 1fr',
+          gap: '15px'
+        }}>
+          <input
+            type="text"
+            placeholder="Search by project name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              background: theme.background,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '8px',
+              padding: '10px 15px',
+              color: theme.textPrimary,
+              fontSize: '0.95rem',
+              outline: 'none'
+            }}
+          />
+          <input
+            type="text"
+            placeholder="Platform (e.g., web)"
+            value={platform}
+            onChange={(e) => setPlatform(e.target.value)}
+            style={{
+              background: theme.background,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '8px',
+              padding: '10px 15px',
+              color: theme.textPrimary,
+              fontSize: '0.95rem',
+              outline: 'none'
+            }}
+          />
+          <input
+            type="number"
+            placeholder="Min budget ($)"
+            value={minBudget}
+            onChange={(e) => setMinBudget(e.target.value)}
+            style={{
+              background: theme.background,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '8px',
+              padding: '10px 15px',
+              color: theme.textPrimary,
+              fontSize: '0.95rem',
+              outline: 'none'
+            }}
+          />
+          <input
+            type="number"
+            placeholder="Max budget ($)"
+            value={maxBudget}
+            onChange={(e) => setMaxBudget(e.target.value)}
+            style={{
+              background: theme.background,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '8px',
+              padding: '10px 15px',
+              color: theme.textPrimary,
+              fontSize: '0.95rem',
+              outline: 'none'
+            }}
+          />
         </div>
 
       {loading ? (
