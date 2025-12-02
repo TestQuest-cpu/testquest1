@@ -658,11 +658,29 @@ module.exports = async (req, res) => {
         filter.platform = { $regex: platform, $options: 'i' };
       }
 
-      // Filter by budget range
+      // Filter by budget range (check both totalBudget and totalBounty for compatibility)
       if (minBudget || maxBudget) {
-        filter.totalBudget = {};
-        if (minBudget) filter.totalBudget.$gte = parseFloat(minBudget);
-        if (maxBudget) filter.totalBudget.$lte = parseFloat(maxBudget);
+        const budgetConditions = [];
+
+        if (minBudget && maxBudget) {
+          budgetConditions.push({ totalBudget: { $gte: parseFloat(minBudget), $lte: parseFloat(maxBudget) } });
+          budgetConditions.push({ totalBounty: { $gte: parseFloat(minBudget), $lte: parseFloat(maxBudget) } });
+        } else if (minBudget) {
+          budgetConditions.push({ totalBudget: { $gte: parseFloat(minBudget) } });
+          budgetConditions.push({ totalBounty: { $gte: parseFloat(minBudget) } });
+        } else if (maxBudget) {
+          budgetConditions.push({ totalBudget: { $lte: parseFloat(maxBudget) } });
+          budgetConditions.push({ totalBounty: { $lte: parseFloat(maxBudget) } });
+        }
+
+        // Combine with existing filters using $and
+        const existingFilters = { ...filter };
+        filter = {
+          $and: [
+            existingFilters,
+            { $or: budgetConditions }
+          ]
+        };
       }
 
       const projects = await Project.find(filter)
