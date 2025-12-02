@@ -420,6 +420,24 @@ module.exports = async (req, res) => {
           return res.status(403).json({ message: 'Developer account required' });
         }
 
+        // Anti-spam: Check weekly submission limit (2 projects per week)
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        const recentProjectsCount = await Project.countDocuments({
+          postedBy: user._id,
+          createdAt: { $gte: sevenDaysAgo }
+        });
+
+        if (recentProjectsCount >= 2) {
+          return res.status(429).json({
+            message: 'Submission limit reached. You can only submit 2 projects per week. Please try again later.',
+            limit: 2,
+            currentCount: recentProjectsCount,
+            resetDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+          });
+        }
+
         const { projectData, totalBounty } = req.body;
 
         if (!projectData || !totalBounty) {
