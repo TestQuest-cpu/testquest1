@@ -31,7 +31,9 @@ function App() {
       const developerLightMode = localStorage.getItem('developerLightMode') === 'true';
       const isLightMode = testerLightMode || developerLightMode;
 
-      document.body.style.backgroundColor = isLightMode ? '#F5F7FA' : '#0E0F15';
+      const bgColor = isLightMode ? '#F5F7FA' : '#0E0F15';
+      document.documentElement.style.backgroundColor = bgColor;
+      document.body.style.backgroundColor = bgColor;
     };
 
     updateBodyBackground();

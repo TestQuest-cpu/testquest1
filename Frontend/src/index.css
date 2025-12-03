@@ -4,6 +4,7 @@ html, body, #root {
   padding: 0;
   width: 100%;
   height: 100%;
-  background-color: #0E0F15; /* Match the dashboard bg */
   overflow-x: hidden; /* Prevent side scrolling */
 }
+
+/* Background color is set dynamically via JavaScript based on theme preference */
