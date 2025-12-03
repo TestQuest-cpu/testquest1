@@ -16,8 +16,8 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
 
   const theme = getTesterTheme(isLightMode);
 
-  const CREDITS_PER_USD = 100; // 100 credits = 1 USD
-  const MIN_WITHDRAWAL_CREDITS = 500; // 500 credits = $5 USD
+  const CREDITS_PER_USD = 1; // 1 credit = $1 USD
+  const MIN_WITHDRAWAL_CREDITS = 5; // 5 credits = $5 USD
   const MIN_WITHDRAWAL_USD = MIN_WITHDRAWAL_CREDITS / CREDITS_PER_USD;
 
   useEffect(() => {

@@ -424,7 +424,7 @@ const PayPalPayment = ({
             lineHeight: '1.5',
             fontFamily: 'DM Sans, sans-serif'
           }}>
-            💡 <strong>How it works:</strong> Your ${budgetAmount.toFixed(2)} budget will be converted to {(budgetAmount * 100 * 0.85).toFixed(0)} credits for bug rewards.
+            💡 <strong>How it works:</strong> Your ${budgetAmount.toFixed(2)} budget will be converted to {(budgetAmount * 0.85).toFixed(0)} credits for bug rewards.
             The ${(budgetAmount * 0.15).toFixed(2)} platform fee (15%) helps us maintain TestQuest. The $2.00 processing fee deposit is <strong>fully refundable</strong> when your project is approved, or if rejected for quality reasons. It's only kept if your project violates our policies.
           </p>
         </div>

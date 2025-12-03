@@ -1503,7 +1503,7 @@ async function handleWithdrawalManagement(req, res) {
 
           try {
             // Send PayPal payout automatically
-            // Convert credits to USD (100 credits = 1 USD)
+            // Convert credits to USD (1 credit = 1 USD)
             const CREDITS_PER_USD = 1;
             const amountInCredits = withdrawal.amount;
             const amountInUSD = amountInCredits / CREDITS_PER_USD;

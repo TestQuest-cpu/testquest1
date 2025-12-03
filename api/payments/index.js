@@ -145,9 +145,9 @@ async function refundPayPalCapture(captureId, amount, accessToken, baseURL) {
 }
 
 const PAYPAL_CONFIG = {
-  CREDITS_PER_USD: 1, // 1 credits = 1 USD
-  MIN_WITHDRAWAL_CREDITS: 500, // 500 credits = $5 USD minimum withdrawal
-  MAX_WITHDRAWAL_CREDITS: 1000000, // 1000000 credits = $10000 USD
+  CREDITS_PER_USD: 1, // 1 credit = 1 USD
+  MIN_WITHDRAWAL_CREDITS: 5, // 5 credits = $5 USD minimum withdrawal
+  MAX_WITHDRAWAL_CREDITS: 10000, // 10000 credits = $10000 USD
   CURRENCY: 'USD',
   RETURN_URL: (process.env.FRONTEND_URL || 'https://test-quest-seven.vercel.app').trim(),
   CANCEL_URL: (process.env.FRONTEND_URL || 'https://test-quest-seven.vercel.app').trim()

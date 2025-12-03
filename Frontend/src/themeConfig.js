@@ -1,6 +1,6 @@
 // CREDITS TO USD CONVERSION RATE
 // Change this single value to update the conversion rate across the entire app
-export const CREDITS_TO_USD = 100; // 100 credits = $1 USD
+export const CREDITS_TO_USD = 1; // 1 credit = $1 USD
 
 export const getDeveloperTheme = (isLightMode) => ({
   background: isLightMode ? '#F5F7FA' : '#0E0F15',
