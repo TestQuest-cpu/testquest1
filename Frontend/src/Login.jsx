@@ -349,8 +349,18 @@ function Login({ onLoginAsTester, onLoginAsDeveloper, onModeratorAccess }) {
         color: 'white',
         ...(!isMobile ? fadeInLeft : {})
       }}>
-        <h1 style={{ 
-          fontSize: isMobile ? '2rem' : '3rem', 
+        <img
+          src="/favicon.png"
+          alt="TestQuest Logo"
+          style={{
+            width: isMobile ? '80px' : '120px',
+            height: isMobile ? '80px' : '120px',
+            marginBottom: isMobile ? '15px' : '25px',
+            objectFit: 'contain'
+          }}
+        />
+        <h1 style={{
+          fontSize: isMobile ? '2rem' : '3rem',
           fontWeight: 'bold',
           marginBottom: isMobile ? '15px' : '30px',
           letterSpacing: isMobile ? '2px' : '3px',
