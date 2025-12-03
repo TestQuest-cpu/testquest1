@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getTesterTheme } from './themeConfig';
 
 function ProjectDisputeModal({ project, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
@@ -13,6 +14,12 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
   const [error, setError] = useState('');
   const [bugReports, setBugReports] = useState([]);
   const [loadingBugReports, setLoadingBugReports] = useState(true);
+  const [isLightMode] = useState(() => {
+    const saved = localStorage.getItem('testerLightMode');
+    return saved === null ? false : saved === 'true';
+  });
+
+  const theme = getTesterTheme(isLightMode);
 
   const categories = [
     { value: 'unfair_rejection', label: 'Unfair Bug Report Rejection' },
@@ -92,7 +99,17 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
   };
 
   return (
-    <div style={{
+    <>
+      <style>
+        {`
+          .dispute-modal input::placeholder,
+          .dispute-modal textarea::placeholder {
+            color: ${isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.6)'} !important;
+            opacity: 1 !important;
+          }
+        `}
+      </style>
+    <div className="dispute-modal" style={{
       position: 'fixed',
       top: 0,
       left: 0,
@@ -106,37 +123,40 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
       padding: '20px'
     }}>
       <div style={{
-        backgroundColor: '#1F1F1F',
+        backgroundColor: theme.cardBackground,
         borderRadius: '16px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        border: `1px solid ${theme.border}`,
         width: '100%',
         maxWidth: '700px',
         maxHeight: '90vh',
-        overflow: 'auto'
+        overflow: 'auto',
+        transition: 'all 0.3s ease'
       }}>
         {/* Header */}
         <div style={{
           padding: '25px 30px 0',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          borderBottom: `1px solid ${theme.border}`,
           marginBottom: '25px',
           paddingBottom: '20px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h2 style={{
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '1.5rem',
                 fontWeight: '700',
-                margin: '0 0 8px 0'
+                margin: '0 0 8px 0',
+                transition: 'color 0.3s ease'
               }}>
                 Report Project Issue
               </h2>
               <p style={{
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: theme.textSecondary,
                 fontSize: '0.95rem',
-                margin: 0
+                margin: 0,
+                transition: 'color 0.3s ease'
               }}>
-                Project: <span style={{ color: 'white', fontWeight: '600' }}>{project?.name}</span>
+                Project: <span style={{ color: theme.textPrimary, fontWeight: '600' }}>{project?.name}</span>
               </p>
             </div>
             <button
@@ -144,10 +164,11 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
               style={{
                 background: 'none',
                 border: 'none',
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: theme.textSecondary,
                 fontSize: '1.5rem',
                 cursor: 'pointer',
-                padding: '5px'
+                padding: '5px',
+                transition: 'color 0.3s ease'
               }}
             >
               ✕
@@ -174,11 +195,12 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
           {/* Category Selection */}
           <div style={{ marginBottom: '25px' }}>
             <label style={{
-              color: 'white',
+              color: theme.textPrimary,
               fontSize: '0.95rem',
               marginBottom: '8px',
               display: 'block',
-              fontWeight: '500'
+              fontWeight: '500',
+              transition: 'color 0.3s ease'
             }}>
               Issue Category <span style={{ color: '#EF4444' }}>*</span>
             </label>
@@ -189,12 +211,13 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
               required
               style={{
                 width: '100%',
-                backgroundColor: '#2A2A2A',
-                border: '1px solid #404040',
+                backgroundColor: theme.statsCardBg,
+                border: `1px solid ${theme.border}`,
                 borderRadius: '8px',
                 padding: '12px',
-                color: 'white',
-                fontSize: '0.95rem'
+                color: theme.textPrimary,
+                fontSize: '0.95rem',
+                transition: 'all 0.3s ease'
               }}
             >
               <option value="">Select an issue category...</option>
@@ -207,11 +230,12 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
           {/* Bug Report Selection */}
           <div style={{ marginBottom: '25px' }}>
             <label style={{
-              color: 'white',
+              color: theme.textPrimary,
               fontSize: '0.95rem',
               marginBottom: '8px',
               display: 'block',
-              fontWeight: '500'
+              fontWeight: '500',
+              transition: 'color 0.3s ease'
             }}>
               Related Bug Report (Optional)
             </label>
@@ -222,13 +246,14 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
               disabled={loadingBugReports}
               style={{
                 width: '100%',
-                backgroundColor: '#2A2A2A',
-                border: '1px solid #404040',
+                backgroundColor: theme.statsCardBg,
+                border: `1px solid ${theme.border}`,
                 borderRadius: '8px',
                 padding: '12px',
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '0.95rem',
-                cursor: loadingBugReports ? 'wait' : 'pointer'
+                cursor: loadingBugReports ? 'wait' : 'pointer',
+                transition: 'all 0.3s ease'
               }}
             >
               <option value="">
@@ -242,18 +267,20 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
             </select>
             {!loadingBugReports && bugReports.length === 0 && (
               <p style={{
-                color: 'rgba(255, 255, 255, 0.5)',
+                color: theme.textMuted,
                 fontSize: '0.85rem',
                 marginTop: '6px',
-                fontStyle: 'italic'
+                fontStyle: 'italic',
+                transition: 'color 0.3s ease'
               }}>
                 You haven't submitted any bug reports for this project yet.
               </p>
             )}
             <p style={{
-              color: 'rgba(255, 255, 255, 0.6)',
+              color: theme.textSecondary,
               fontSize: '0.85rem',
-              marginTop: '6px'
+              marginTop: '6px',
+              transition: 'color 0.3s ease'
             }}>
               Select a bug report if this dispute is related to a specific bug you submitted. This helps moderators review your case with full context.
             </p>
@@ -262,11 +289,12 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
           {/* Subject */}
           <div style={{ marginBottom: '25px' }}>
             <label style={{
-              color: 'white',
+              color: theme.textPrimary,
               fontSize: '0.95rem',
               marginBottom: '8px',
               display: 'block',
-              fontWeight: '500'
+              fontWeight: '500',
+              transition: 'color 0.3s ease'
             }}>
               Subject <span style={{ color: '#EF4444' }}>*</span>
             </label>
@@ -279,12 +307,13 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
               required
               style={{
                 width: '100%',
-                backgroundColor: '#2A2A2A',
-                border: '1px solid #404040',
+                backgroundColor: theme.statsCardBg,
+                border: `1px solid ${theme.border}`,
                 borderRadius: '8px',
                 padding: '12px',
-                color: 'white',
-                fontSize: '0.95rem'
+                color: theme.textPrimary,
+                fontSize: '0.95rem',
+                transition: 'all 0.3s ease'
               }}
             />
           </div>
@@ -292,11 +321,12 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
           {/* Description */}
           <div style={{ marginBottom: '25px' }}>
             <label style={{
-              color: 'white',
+              color: theme.textPrimary,
               fontSize: '0.95rem',
               marginBottom: '8px',
               display: 'block',
-              fontWeight: '500'
+              fontWeight: '500',
+              transition: 'color 0.3s ease'
             }}>
               Detailed Description <span style={{ color: '#EF4444' }}>*</span>
             </label>
@@ -309,14 +339,15 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
               rows="6"
               style={{
                 width: '100%',
-                backgroundColor: '#2A2A2A',
-                border: '1px solid #404040',
+                backgroundColor: theme.statsCardBg,
+                border: `1px solid ${theme.border}`,
                 borderRadius: '8px',
                 padding: '15px',
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '0.95rem',
                 resize: 'vertical',
-                lineHeight: '1.5'
+                lineHeight: '1.5',
+                transition: 'all 0.3s ease'
               }}
             />
           </div>
@@ -324,11 +355,12 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
           {/* Evidence */}
           <div style={{ marginBottom: '25px' }}>
             <label style={{
-              color: 'white',
+              color: theme.textPrimary,
               fontSize: '0.95rem',
               marginBottom: '8px',
               display: 'block',
-              fontWeight: '500'
+              fontWeight: '500',
+              transition: 'color 0.3s ease'
             }}>
               Evidence/Supporting Information
             </label>
@@ -340,14 +372,15 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
               rows="4"
               style={{
                 width: '100%',
-                backgroundColor: '#2A2A2A',
-                border: '1px solid #404040',
+                backgroundColor: theme.statsCardBg,
+                border: `1px solid ${theme.border}`,
                 borderRadius: '8px',
                 padding: '15px',
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '0.95rem',
                 resize: 'vertical',
-                lineHeight: '1.5'
+                lineHeight: '1.5',
+                transition: 'all 0.3s ease'
               }}
             />
           </div>
@@ -355,11 +388,12 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
           {/* Expected Resolution */}
           <div style={{ marginBottom: '30px' }}>
             <label style={{
-              color: 'white',
+              color: theme.textPrimary,
               fontSize: '0.95rem',
               marginBottom: '8px',
               display: 'block',
-              fontWeight: '500'
+              fontWeight: '500',
+              transition: 'color 0.3s ease'
             }}>
               Expected Resolution
             </label>
@@ -371,14 +405,15 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
               rows="3"
               style={{
                 width: '100%',
-                backgroundColor: '#2A2A2A',
-                border: '1px solid #404040',
+                backgroundColor: theme.statsCardBg,
+                border: `1px solid ${theme.border}`,
                 borderRadius: '8px',
                 padding: '15px',
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '0.95rem',
                 resize: 'vertical',
-                lineHeight: '1.5'
+                lineHeight: '1.5',
+                transition: 'all 0.3s ease'
               }}
             />
           </div>
@@ -390,15 +425,16 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
               onClick={onClose}
               disabled={isSubmitting}
               style={{
-                backgroundColor: '#404040',
-                color: 'white',
+                backgroundColor: theme.buttonDark,
+                color: theme.textPrimary,
                 border: 'none',
                 borderRadius: '8px',
                 padding: '12px 24px',
                 fontSize: '0.95rem',
                 fontWeight: '500',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                opacity: isSubmitting ? 0.6 : 1
+                opacity: isSubmitting ? 0.6 : 1,
+                transition: 'all 0.3s ease'
               }}
             >
               Cancel
@@ -417,7 +453,8 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
                 fontSize: '0.95rem',
                 fontWeight: '600',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                opacity: isSubmitting ? 0.8 : 1
+                opacity: isSubmitting ? 0.8 : 1,
+                transition: 'all 0.3s ease'
               }}
             >
               {isSubmitting ? 'Submitting...' : 'Submit Report'}
@@ -426,6 +463,7 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
         </form>
       </div>
     </div>
+    </>
   );
 }
 

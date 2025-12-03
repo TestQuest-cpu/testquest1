@@ -1039,10 +1039,11 @@ function BugReport({ onBack, projectId, onProfile, onLeaderboards }) {
                   <option value="critical">Critical - {project ? project.bugRewards?.critical || 0 : 0} credits</option>
                 </select>
                 <p style={{
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: theme.textMuted,
                   fontSize: '0.85rem',
                   marginTop: '8px',
-                  marginBottom: 0
+                  marginBottom: 0,
+                  transition: 'color 0.3s ease'
                 }}>
                   Not sure which severity to choose? Click the ℹ icon for guidelines
                 </p>
