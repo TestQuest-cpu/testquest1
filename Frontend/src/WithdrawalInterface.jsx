@@ -200,10 +200,10 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
           <button
             onClick={onClose}
             style={{
-              background: 'rgba(255, 255, 255, 0.1)',
+              background: isLightMode ? '#E5E7EB' : 'rgba(255, 255, 255, 0.1)',
               border: 'none',
               borderRadius: '8px',
-              color: 'white',
+              color: isLightMode ? '#1A1A1A' : 'white',
               fontSize: '18px',
               width: '40px',
               height: '40px',
@@ -214,11 +214,11 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
               transition: 'all 0.3s ease'
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+              e.target.style.background = isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.2)';
               e.target.style.transform = 'scale(1.1)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.target.style.background = isLightMode ? '#E5E7EB' : 'rgba(255, 255, 255, 0.1)';
               e.target.style.transform = 'scale(1)';
             }}
           >
