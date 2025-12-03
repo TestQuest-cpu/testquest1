@@ -5,6 +5,15 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TestQuest - Secure Testing Platform</title>
+    <script>
+      // Set initial background color based on saved preference before page loads
+      (function() {
+        const testerLightMode = localStorage.getItem('testerLightMode') === 'true';
+        const developerLightMode = localStorage.getItem('developerLightMode') === 'true';
+        const isLightMode = testerLightMode || developerLightMode;
+        document.documentElement.style.backgroundColor = isLightMode ? '#F5F7FA' : '#0E0F15';
+      })();
+    </script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

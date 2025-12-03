@@ -97,7 +97,7 @@ function Leaderboards({ onBack, onProfile }) {
                 border: 'none',
                 borderRadius: '10px',
                 padding: '12px 28px',
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '1rem',
                 fontWeight: '500',
                 cursor: 'pointer',
