@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { AdminRoute, TesterRoute, DeveloperRoute, ProtectedRoute, ModeratorRoute } from "./components/Routes.jsx";
 import { ProjectViewWrapper, TesterProjectViewWrapper, BugReportWrapper } from "./components/ProjectViewWrapper.jsx";
 import LandingPage from "./LandingPage.jsx";
@@ -21,7 +21,26 @@ import './index.css';
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [dashboardRefresh, setDashboardRefresh] = useState(0);
+
+  // Set body background color based on light mode preference
+  useEffect(() => {
+    const updateBodyBackground = () => {
+      const testerLightMode = localStorage.getItem('testerLightMode') === 'true';
+      const developerLightMode = localStorage.getItem('developerLightMode') === 'true';
+      const isLightMode = testerLightMode || developerLightMode;
+
+      document.body.style.backgroundColor = isLightMode ? '#F5F7FA' : '#0E0F15';
+    };
+
+    updateBodyBackground();
+
+    // Listen for storage changes (in case user changes mode in another tab)
+    window.addEventListener('storage', updateBodyBackground);
+
+    return () => window.removeEventListener('storage', updateBodyBackground);
+  }, [location]); // Update on route change
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
