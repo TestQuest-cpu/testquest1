@@ -249,9 +249,10 @@ function Leaderboards({ onBack, onProfile }) {
               <div style={{
                 fontSize: '1.2rem',
                 fontWeight: '700',
-                color: 'white',
+                color: theme.textPrimary,
                 marginBottom: '15px',
-                fontFamily: 'Sansita, sans-serif'
+                fontFamily: 'Sansita, sans-serif',
+                transition: 'color 0.3s ease'
               }}>Testing Sovereign</div>
               <div style={{
                 width: '70px',
@@ -264,11 +265,12 @@ function Leaderboards({ onBack, onProfile }) {
                 border: '3px solid #C0C0C0'
               }}></div>
               <h4 style={{
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '1rem',
                 fontWeight: '700',
                 marginBottom: '8px',
-                fontFamily: 'DM Sans, sans-serif'
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'color 0.3s ease'
               }}>{leaderboardData[1]?.username}</h4>
 
               {/* Badges */}
@@ -308,16 +310,18 @@ function Leaderboards({ onBack, onProfile }) {
               )}
 
               <div style={{
-                color: '#C0C0C0',
+                color: theme.textSecondary,
                 fontSize: '0.9rem',
                 marginBottom: '5px',
-                fontFamily: 'DM Sans, sans-serif'
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'color 0.3s ease'
               }}>{leaderboardData[1]?.projectsParticipated} Projects</div>
               <div style={{
-                color: '#C0C0C0',
+                color: theme.textPrimary,
                 fontSize: '1.3rem',
                 fontWeight: '700',
-                fontFamily: 'Sansita, sans-serif'
+                fontFamily: 'Sansita, sans-serif',
+                transition: 'color 0.3s ease'
               }}>{leaderboardData[1]?.points.toLocaleString()} credits</div>
             </div>
 
@@ -334,21 +338,27 @@ function Leaderboards({ onBack, onProfile }) {
                 left: '0',
                 width: '200px',
                 height: '20px',
-                background: 'linear-gradient(180deg, #0B0D16 9%, #181C2A 100%)',
+                background: isLightMode
+                  ? 'linear-gradient(180deg, #D1D5DB 9%, #E5E7EB 100%)'
+                  : 'linear-gradient(180deg, #0B0D16 9%, #181C2A 100%)',
                 clipPath: 'polygon(0% 100%, 200px 100%, 170px 0%, 30px 0%)',
-                zIndex: 2
+                zIndex: 2,
+                transition: 'background 0.3s ease'
               }}></div>
 
               {/* Main pillar */}
               <div style={{
                 width: '200px',
                 height: '180px',
-                background: 'linear-gradient(180deg, #252C41 0%, #0F1118 45%, #0E0F15 100%)',
+                background: isLightMode
+                  ? 'linear-gradient(180deg, #F3F4F6 0%, #E5E7EB 45%, #D1D5DB 100%)'
+                  : 'linear-gradient(180deg, #252C41 0%, #0F1118 45%, #0E0F15 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
-                zIndex: 1
+                zIndex: 1,
+                transition: 'background 0.3s ease'
               }}>
               </div>
             </div>
@@ -372,9 +382,10 @@ function Leaderboards({ onBack, onProfile }) {
               <div style={{
                 fontSize: '1.2rem',
                 fontWeight: '700',
-                color: 'white',
+                color: theme.textPrimary,
                 marginBottom: '15px',
-                fontFamily: 'Sansita, sans-serif'
+                fontFamily: 'Sansita, sans-serif',
+                transition: 'color 0.3s ease'
               }}>Bug Conqueror</div>
               <div style={{
                 width: '80px',
@@ -388,11 +399,12 @@ function Leaderboards({ onBack, onProfile }) {
                 boxShadow: '0 4px 15px rgba(255, 215, 0, 0.4)'
               }}></div>
               <h4 style={{
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '1.1rem',
                 fontWeight: '700',
                 marginBottom: '10px',
-                fontFamily: 'DM Sans, sans-serif'
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'color 0.3s ease'
               }}>{leaderboardData[0]?.username}</h4>
 
               {/* Badges */}
@@ -432,16 +444,18 @@ function Leaderboards({ onBack, onProfile }) {
               )}
 
               <div style={{
-                color: 'white',
+                color: theme.textSecondary,
                 fontSize: '1rem',
                 marginBottom: '8px',
-                fontFamily: 'DM Sans, sans-serif'
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'color 0.3s ease'
               }}>{leaderboardData[0]?.projectsParticipated} Projects</div>
               <div style={{
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '1.5rem',
                 fontWeight: '700',
-                fontFamily: 'Sansita, sans-serif'
+                fontFamily: 'Sansita, sans-serif',
+                transition: 'color 0.3s ease'
               }}>{leaderboardData[0]?.points.toLocaleString()} credits</div>
             </div>
 
@@ -458,21 +472,27 @@ function Leaderboards({ onBack, onProfile }) {
                 left: '0',
                 width: '220px',
                 height: '22px',
-                background: 'linear-gradient(180deg, #0B0D16 9%, #181C2A 100%)',
+                background: isLightMode
+                  ? 'linear-gradient(180deg, #D1D5DB 9%, #E5E7EB 100%)'
+                  : 'linear-gradient(180deg, #0B0D16 9%, #181C2A 100%)',
                 clipPath: 'polygon(0% 100%, 220px 100%, 185px 0%, 35px 0%)',
-                zIndex: 2
+                zIndex: 2,
+                transition: 'background 0.3s ease'
               }}></div>
 
               {/* Main pillar */}
               <div style={{
                 width: '220px',
                 height: '220px',
-                background: 'linear-gradient(180deg, #252C41 0%, #0F1118 45%, #0E0F15 100%)',
+                background: isLightMode
+                  ? 'linear-gradient(180deg, #F3F4F6 0%, #E5E7EB 45%, #D1D5DB 100%)'
+                  : 'linear-gradient(180deg, #252C41 0%, #0F1118 45%, #0E0F15 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
-                zIndex: 1
+                zIndex: 1,
+                transition: 'background 0.3s ease'
               }}>
               </div>
 
@@ -480,9 +500,10 @@ function Leaderboards({ onBack, onProfile }) {
               <div style={{
                 width: '220px',
                 height: '40px',
-                background: '#1A1A1A',
+                background: isLightMode ? '#E5E7EB' : '#1A1A1A',
                 position: 'relative',
-                zIndex: -1
+                zIndex: -1,
+                transition: 'background 0.3s ease'
               }}></div>
             </div>
           </div>
@@ -504,9 +525,10 @@ function Leaderboards({ onBack, onProfile }) {
               <div style={{
                 fontSize: '1.2rem',
                 fontWeight: '700',
-                color: 'white',
+                color: theme.textPrimary,
                 marginBottom: '15px',
-                fontFamily: 'Sansita, sans-serif'
+                fontFamily: 'Sansita, sans-serif',
+                transition: 'color 0.3s ease'
               }}>Cyber Warrior</div>
               <div style={{
                 width: '70px',
@@ -519,11 +541,12 @@ function Leaderboards({ onBack, onProfile }) {
                 border: '3px solid #CD7F32'
               }}></div>
               <h4 style={{
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '1rem',
                 fontWeight: '700',
                 marginBottom: '8px',
-                fontFamily: 'DM Sans, sans-serif'
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'color 0.3s ease'
               }}>{leaderboardData[2]?.username}</h4>
 
               {/* Badges */}
@@ -563,16 +586,18 @@ function Leaderboards({ onBack, onProfile }) {
               )}
 
               <div style={{
-                color: 'white',
+                color: theme.textSecondary,
                 fontSize: '0.9rem',
                 marginBottom: '5px',
-                fontFamily: 'DM Sans, sans-serif'
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'color 0.3s ease'
               }}>{leaderboardData[2]?.projectsParticipated} Projects</div>
               <div style={{
-                color: 'white',
+                color: theme.textPrimary,
                 fontSize: '1.3rem',
                 fontWeight: '700',
-                fontFamily: 'Sansita, sans-serif'
+                fontFamily: 'Sansita, sans-serif',
+                transition: 'color 0.3s ease'
               }}>{leaderboardData[2]?.points.toLocaleString()} credits</div>
             </div>
 
@@ -589,21 +614,27 @@ function Leaderboards({ onBack, onProfile }) {
                 left: '0',
                 width: '200px',
                 height: '18px',
-                background: 'linear-gradient(180deg, #0B0D16 9%, #181C2A 100%)',
+                background: isLightMode
+                  ? 'linear-gradient(180deg, #D1D5DB 9%, #E5E7EB 100%)'
+                  : 'linear-gradient(180deg, #0B0D16 9%, #181C2A 100%)',
                 clipPath: 'polygon(0% 100%, 200px 100%, 170px 0%, 30px 0%)',
-                zIndex: 2
+                zIndex: 2,
+                transition: 'background 0.3s ease'
               }}></div>
 
               {/* Main pillar */}
               <div style={{
                 width: '200px',
                 height: '150px',
-                background: 'linear-gradient(180deg, #252C41 0%, #0F1118 45%, #0E0F15 100%)',
+                background: isLightMode
+                  ? 'linear-gradient(180deg, #F3F4F6 0%, #E5E7EB 45%, #D1D5DB 100%)'
+                  : 'linear-gradient(180deg, #252C41 0%, #0F1118 45%, #0E0F15 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
-                zIndex: 1
+                zIndex: 1,
+                transition: 'background 0.3s ease'
               }}>
               </div>
             </div>
