@@ -508,7 +508,7 @@ function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, on
               marginBottom: '30px',
               fontSize: '0.95rem'
             }}>
-              {accountType === 'developer' ? 'Developer Portal' : 'Tester Portal'}
+              Enter your credentials to continue
             </p>
 
             {/* Error Message */}
@@ -525,40 +525,6 @@ function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, on
                 {error}
               </div>
             )}
-
-            {/* Account Type Display (locked) */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginBottom: '30px'
-            }}>
-              <div
-                style={{
-                  padding: isMobile ? '12px 30px' : '15px 40px',
-                  backgroundColor: '#F3F0FF',
-                  border: '2px solid #7C3AED',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  boxShadow: '0 4px 15px rgba(124, 58, 237, 0.15)'
-                }}
-              >
-                <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>
-                  {accountType === 'developer' ? '</>' : '🔍'}
-                </span>
-                <span style={{
-                  fontWeight: '600',
-                  color: '#7C3AED',
-                  fontSize: '1.1rem'
-                }}>
-                  {accountType === 'developer' ? 'Developer' : 'Tester'}
-                </span>
-                <span style={{ fontSize: '0.8rem', color: '#999' }}>
-                  {accountType === 'developer' ? 'Secure your apps' : 'Find and report bugs'}
-                </span>
-              </div>
-            </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
@@ -857,24 +823,24 @@ function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, on
               GitHub
               </button>
             </div>
-          </div>
-        </div>
 
-        {/* Switch Account Type Link */}
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <a
-            href={accountType === 'developer' ? '/login/tester' : '/login/developer'}
-            style={{
-              color: '#7C3AED',
-              textDecoration: 'none',
-              fontSize: '0.9rem',
-              transition: 'color 0.3s ease'
-            }}
-            onMouseEnter={(e) => e.target.style.color = '#6B2FD6'}
-            onMouseLeave={(e) => e.target.style.color = '#7C3AED'}
-          >
-            {accountType === 'developer' ? 'Are you a Tester? Sign in here →' : 'Are you a Developer? Sign in here →'}
-          </a>
+            {/* Switch Account Type Link */}
+            <div style={{ textAlign: 'center', marginTop: '30px' }}>
+              <a
+                href={accountType === 'developer' ? '/login/tester' : '/login/developer'}
+                style={{
+                  color: '#7C3AED',
+                  textDecoration: 'none',
+                  fontSize: '0.9rem',
+                  transition: 'color 0.3s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.color = '#6B2FD6'}
+                onMouseLeave={(e) => e.target.style.color = '#7C3AED'}
+              >
+                {accountType === 'developer' ? 'Are you a Tester? Sign in here →' : 'Are you a Developer? Sign in here →'}
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Moderator Access Link */}
