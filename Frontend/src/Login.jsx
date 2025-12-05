@@ -151,9 +151,9 @@ const keyframes = `
 }
 `;
 
-function Login({ onLoginAsTester, onLoginAsDeveloper, onModeratorAccess }) {
+function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, onLoginAsDeveloper, onModeratorAccess }) {
   const [activeTab, setActiveTab] = useState('login');
-  const [accountType, setAccountType] = useState('tester');
+  const [accountType, setAccountType] = useState(initialAccountType);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');

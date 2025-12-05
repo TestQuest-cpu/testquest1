@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function LandingPage({ onGetStarted }) {
+function LandingPage({ onDeveloperLogin, onTesterLogin }) {
   const [scrollY, setScrollY] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -65,33 +65,62 @@ function LandingPage({ onGetStarted }) {
           TESTQUEST
         </h1>
 
-        <button
-          onClick={onGetStarted}
-          style={{
-            padding: '12px 30px',
-            backgroundColor: '#7C3AED',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '1rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 4px 15px rgba(124, 58, 237, 0.4)'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#6B2FD6';
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 6px 20px rgba(124, 58, 237, 0.5)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#7C3AED';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 4px 15px rgba(124, 58, 237, 0.4)';
-          }}
-        >
-          Get Started
-        </button>
+        <div style={{ display: 'flex', gap: '15px' }}>
+          <button
+            onClick={onDeveloperLogin}
+            style={{
+              padding: '12px 30px',
+              backgroundColor: '#7C3AED',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '1rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(124, 58, 237, 0.4)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#6B2FD6';
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 20px rgba(124, 58, 237, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#7C3AED';
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 15px rgba(124, 58, 237, 0.4)';
+            }}
+          >
+            Developer
+          </button>
+          <button
+            onClick={onTesterLogin}
+            style={{
+              padding: '12px 30px',
+              backgroundColor: '#00D4FF',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '1rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(0, 212, 255, 0.4)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#00B8E6';
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 20px rgba(0, 212, 255, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#00D4FF';
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 15px rgba(0, 212, 255, 0.4)';
+            }}
+          >
+            Tester
+          </button>
+        </div>
       </nav>
 
       {/* Hero Section */}
@@ -181,33 +210,62 @@ function LandingPage({ onGetStarted }) {
             Find vulnerabilities before they become threats.
           </p>
 
-          <button
-            onClick={onGetStarted}
-            style={{
-              padding: '16px 50px',
-              backgroundColor: '#7C3AED',
-              color: 'white',
-              border: 'none',
-              borderRadius: '10px',
-              fontSize: '1.2rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 8px 30px rgba(124, 58, 237, 0.5)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#6B2FD6';
-              e.target.style.transform = 'translateY(-3px)';
-              e.target.style.boxShadow = '0 12px 40px rgba(124, 58, 237, 0.6)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#7C3AED';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 8px 30px rgba(124, 58, 237, 0.5)';
-            }}
-          >
-            Start Testing Now
-          </button>
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={onDeveloperLogin}
+              style={{
+                padding: '16px 50px',
+                backgroundColor: '#7C3AED',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                fontSize: '1.2rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 8px 30px rgba(124, 58, 237, 0.5)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#6B2FD6';
+                e.target.style.transform = 'translateY(-3px)';
+                e.target.style.boxShadow = '0 12px 40px rgba(124, 58, 237, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = '#7C3AED';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 8px 30px rgba(124, 58, 237, 0.5)';
+              }}
+            >
+              I'm a Developer
+            </button>
+            <button
+              onClick={onTesterLogin}
+              style={{
+                padding: '16px 50px',
+                backgroundColor: '#00D4FF',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                fontSize: '1.2rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 8px 30px rgba(0, 212, 255, 0.5)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#00B8E6';
+                e.target.style.transform = 'translateY(-3px)';
+                e.target.style.boxShadow = '0 12px 40px rgba(0, 212, 255, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = '#00D4FF';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 8px 30px rgba(0, 212, 255, 0.5)';
+              }}
+            >
+              I'm a Tester
+            </button>
+          </div>
         </div>
 
         {/* Scroll Indicator */}
@@ -478,33 +536,62 @@ function LandingPage({ onGetStarted }) {
         }}>
           Join thousands of developers and security researchers making the web safer.
         </p>
-        <button
-          onClick={onGetStarted}
-          style={{
-            padding: '16px 50px',
-            backgroundColor: '#7C3AED',
-            color: 'white',
-            border: 'none',
-            borderRadius: '10px',
-            fontSize: '1.2rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 8px 30px rgba(124, 58, 237, 0.5)'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#6B2FD6';
-            e.target.style.transform = 'translateY(-3px)';
-            e.target.style.boxShadow = '0 12px 40px rgba(124, 58, 237, 0.6)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#7C3AED';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 8px 30px rgba(124, 58, 237, 0.5)';
-          }}
-        >
-          Join TestQuest Today
-        </button>
+        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button
+            onClick={onDeveloperLogin}
+            style={{
+              padding: '16px 50px',
+              backgroundColor: '#7C3AED',
+              color: 'white',
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: '1.2rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 8px 30px rgba(124, 58, 237, 0.5)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#6B2FD6';
+              e.target.style.transform = 'translateY(-3px)';
+              e.target.style.boxShadow = '0 12px 40px rgba(124, 58, 237, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#7C3AED';
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 8px 30px rgba(124, 58, 237, 0.5)';
+            }}
+          >
+            Join as Developer
+          </button>
+          <button
+            onClick={onTesterLogin}
+            style={{
+              padding: '16px 50px',
+              backgroundColor: '#00D4FF',
+              color: 'white',
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: '1.2rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 8px 30px rgba(0, 212, 255, 0.5)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#00B8E6';
+              e.target.style.transform = 'translateY(-3px)';
+              e.target.style.boxShadow = '0 12px 40px rgba(0, 212, 255, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#00D4FF';
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 8px 30px rgba(0, 212, 255, 0.5)';
+            }}
+          >
+            Join as Tester
+          </button>
+        </div>
       </section>
 
       {/* Footer */}

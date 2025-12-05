@@ -195,13 +195,34 @@ function App() {
   return (
     <Routes>
       {/* Landing Page */}
-      <Route path="/" element={<LandingPage onGetStarted={() => navigate('/login')} />} />
+      <Route path="/" element={
+        <LandingPage
+          onDeveloperLogin={() => navigate('/login/developer')}
+          onTesterLogin={() => navigate('/login/tester')}
+        />
+      } />
 
-      {/* Login */}
+      {/* Login Routes */}
       <Route
         path="/login"
+        element={<Navigate to="/login/tester" replace />}
+      />
+      <Route
+        path="/login/developer"
         element={
           <Login
+            accountType="developer"
+            onLoginAsTester={handleLoginAsTester}
+            onLoginAsDeveloper={handleLoginAsDeveloper}
+            onModeratorAccess={handleModeratorAccess}
+          />
+        }
+      />
+      <Route
+        path="/login/tester"
+        element={
+          <Login
+            accountType="tester"
             onLoginAsTester={handleLoginAsTester}
             onLoginAsDeveloper={handleLoginAsDeveloper}
             onModeratorAccess={handleModeratorAccess}
