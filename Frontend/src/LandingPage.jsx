@@ -91,7 +91,7 @@ function LandingPage({ onDeveloperLogin, onTesterLogin }) {
               e.target.style.boxShadow = '0 4px 15px rgba(124, 58, 237, 0.4)';
             }}
           >
-            Developer
+            Sign in as Developer
           </button>
           <button
             onClick={onTesterLogin}
@@ -118,7 +118,7 @@ function LandingPage({ onDeveloperLogin, onTesterLogin }) {
               e.target.style.boxShadow = '0 4px 15px rgba(0, 212, 255, 0.4)';
             }}
           >
-            Tester
+            Sign in as Tester
           </button>
         </div>
       </nav>
@@ -236,7 +236,7 @@ function LandingPage({ onDeveloperLogin, onTesterLogin }) {
                 e.target.style.boxShadow = '0 8px 30px rgba(124, 58, 237, 0.5)';
               }}
             >
-              I'm a Developer
+              Sign in as Developer
             </button>
             <button
               onClick={onTesterLogin}
@@ -263,7 +263,7 @@ function LandingPage({ onDeveloperLogin, onTesterLogin }) {
                 e.target.style.boxShadow = '0 8px 30px rgba(0, 212, 255, 0.5)';
               }}
             >
-              I'm a Tester
+              Sign in as Tester
             </button>
           </div>
         </div>
@@ -562,7 +562,7 @@ function LandingPage({ onDeveloperLogin, onTesterLogin }) {
               e.target.style.boxShadow = '0 8px 30px rgba(124, 58, 237, 0.5)';
             }}
           >
-            Join as Developer
+            Sign in as Developer
           </button>
           <button
             onClick={onTesterLogin}
@@ -589,7 +589,7 @@ function LandingPage({ onDeveloperLogin, onTesterLogin }) {
               e.target.style.boxShadow = '0 8px 30px rgba(0, 212, 255, 0.5)';
             }}
           >
-            Join as Tester
+            Sign in as Tester
           </button>
         </div>
       </section>
