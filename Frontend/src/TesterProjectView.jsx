@@ -1000,7 +1000,7 @@ function TesterProjectView({ project: initialProject, projectId, onBack, onLeade
             overflowY: 'auto',
             height: '100%'
           }}>
-            <ApprovedBugsSection project={project} />
+            <ApprovedBugsSection project={project} isLightMode={isLightMode} />
           </div>
         </div>
 
@@ -1030,6 +1030,7 @@ function TesterProjectView({ project: initialProject, projectId, onBack, onLeade
             getSeverityBadge={getSeverityBadge}
             getStatusBadge={getStatusBadge}
             formatTimeAgo={formatTimeAgo}
+            isLightMode={isLightMode}
           />
         )}
 
@@ -1039,11 +1040,7 @@ function TesterProjectView({ project: initialProject, projectId, onBack, onLeade
 }
 
 // Bug Report Details Modal Component
-function BugReportDetailsModal({ report, project, onClose, getSeverityBadge, getStatusBadge, formatTimeAgo }) {
-  const [isLightMode] = React.useState(() => {
-    const saved = localStorage.getItem('testerLightMode');
-    return saved === null ? false : saved === 'true';
-  });
+function BugReportDetailsModal({ report, project, onClose, getSeverityBadge, getStatusBadge, formatTimeAgo, isLightMode }) {
   const theme = getTesterTheme(isLightMode);
 
   return (
@@ -1386,15 +1383,11 @@ function BugReportDetailsModal({ report, project, onClose, getSeverityBadge, get
 }
 
 // Approved Bugs Section Component
-function ApprovedBugsSection({ project }) {
+function ApprovedBugsSection({ project, isLightMode }) {
   const [approvedBugs, setApprovedBugs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [selectedBug, setSelectedBug] = useState(null);
-  const [isLightMode] = useState(() => {
-    const saved = localStorage.getItem('testerLightMode');
-    return saved === null ? false : saved === 'true';
-  });
   const theme = getTesterTheme(isLightMode);
 
   useEffect(() => {
