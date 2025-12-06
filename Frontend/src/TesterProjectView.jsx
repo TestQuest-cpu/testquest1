@@ -1009,6 +1009,7 @@ function TesterProjectView({ project: initialProject, projectId, onBack, onLeade
           <DisputesList
             projectId={project._id}
             onClose={() => setShowDisputesList(false)}
+            isLightMode={isLightMode}
           />
         )}
 

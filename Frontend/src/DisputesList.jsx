@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { getTesterTheme } from './themeConfig';
 
-function DisputesList({ projectId, onClose }) {
+function DisputesList({ projectId, onClose, isLightMode }) {
   const [projectDisputes, setProjectDisputes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const theme = getTesterTheme(isLightMode);
 
   useEffect(() => {
     fetchProjectDisputes();
@@ -90,7 +92,7 @@ function DisputesList({ projectId, onClose }) {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+      backgroundColor: isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.9)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -98,14 +100,16 @@ function DisputesList({ projectId, onClose }) {
       padding: '20px'
     }}>
       <div style={{
-        backgroundColor: '#1F1F1F',
+        backgroundColor: theme.cardBackground,
         borderRadius: '16px',
         padding: '30px',
         maxWidth: '800px',
         width: '100%',
         maxHeight: '90vh',
         overflow: 'auto',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
+        border: `1px solid ${theme.border}`,
+        boxShadow: isLightMode ? '0 20px 60px rgba(0, 0, 0, 0.15)' : '0 20px 60px rgba(0, 0, 0, 0.5)',
+        transition: 'all 0.3s ease'
       }}>
         {/* Header */}
         <div style={{
@@ -115,28 +119,32 @@ function DisputesList({ projectId, onClose }) {
           marginBottom: '25px'
         }}>
           <h2 style={{
-            color: 'white',
+            color: theme.textPrimary,
             fontSize: '24px',
             fontWeight: '700',
-            margin: 0
+            margin: 0,
+            transition: 'color 0.3s ease'
           }}>
             Your Project Reports
           </h2>
           <button
             onClick={onClose}
             style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
+              background: theme.buttonLight,
+              border: `1px solid ${theme.border}`,
               borderRadius: '8px',
-              color: 'white',
+              color: theme.textPrimary,
               fontSize: '18px',
               width: '40px',
               height: '40px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              transition: 'all 0.3s ease'
             }}
+            onMouseEnter={(e) => e.target.style.background = theme.buttonLightHover}
+            onMouseLeave={(e) => e.target.style.background = theme.buttonLight}
           >
             ✕
           </button>
@@ -144,11 +152,11 @@ function DisputesList({ projectId, onClose }) {
 
         {/* Content */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: 'rgba(255, 255, 255, 0.7)' }}>
+          <div style={{ textAlign: 'center', padding: '40px', color: theme.textSecondary, transition: 'color 0.3s ease' }}>
             <div style={{
               width: '40px',
               height: '40px',
-              border: '3px solid rgba(255,255,255,0.1)',
+              border: `3px solid ${theme.border}`,
               borderTop: '3px solid #4ECDC4',
               borderRadius: '50%',
               animation: 'spin 1s linear infinite',
@@ -158,9 +166,8 @@ function DisputesList({ projectId, onClose }) {
           </div>
         ) : error ? (
           <div style={{ textAlign: 'center', padding: '40px', color: '#FF6B6B' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-            <h3 style={{ marginBottom: '8px' }}>Error Loading Reports</h3>
-            <p style={{ marginBottom: '20px', opacity: 0.8 }}>{error}</p>
+            <h3 style={{ marginBottom: '8px', color: theme.textPrimary, transition: 'color 0.3s ease' }}>Error Loading Reports</h3>
+            <p style={{ marginBottom: '20px', opacity: 0.8, color: theme.textSecondary, transition: 'color 0.3s ease' }}>{error}</p>
             <button
               onClick={fetchProjectDisputes}
               style={{
@@ -178,17 +185,18 @@ function DisputesList({ projectId, onClose }) {
           </div>
         ) : projectDisputes.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px' }}>
-            <div style={{ fontSize: '64px', marginBottom: '16px' }}>📝</div>
             <h3 style={{
-              color: 'white',
+              color: theme.textPrimary,
               fontSize: '20px',
-              marginBottom: '8px'
+              marginBottom: '8px',
+              transition: 'color 0.3s ease'
             }}>
               No Project Reports Submitted
             </h3>
             <p style={{
-              color: 'rgba(255, 255, 255, 0.7)',
-              fontSize: '14px'
+              color: theme.textSecondary,
+              fontSize: '14px',
+              transition: 'color 0.3s ease'
             }}>
               You haven't submitted any project reports yet.
             </p>
@@ -200,20 +208,22 @@ function DisputesList({ projectId, onClose }) {
               <div
                 key={dispute._id}
                 style={{
-                  backgroundColor: '#2A2A2A',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  backgroundColor: theme.buttonDark,
+                  border: `1px solid ${theme.border}`,
                   borderRadius: '12px',
-                  padding: '20px'
+                  padding: '20px',
+                  transition: 'all 0.3s ease'
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                   <h4 style={{
-                    color: 'white',
+                    color: theme.textPrimary,
                     fontSize: '16px',
                     fontWeight: '600',
                     marginBottom: '0',
                     flex: 1,
-                    marginRight: '15px'
+                    marginRight: '15px',
+                    transition: 'color 0.3s ease'
                   }}>
                     {dispute.subject}
                   </h4>
@@ -233,15 +243,16 @@ function DisputesList({ projectId, onClose }) {
                 </div>
 
                 <p style={{
-                  color: 'rgba(255, 255, 255, 0.8)',
+                  color: theme.textSecondary,
                   fontSize: '14px',
                   marginBottom: '15px',
-                  lineHeight: '1.5'
+                  lineHeight: '1.5',
+                  transition: 'color 0.3s ease'
                 }}>
                   {dispute.description.length > 150 ? dispute.description.substring(0, 150) + '...' : dispute.description}
                 </p>
 
-                <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)' }}>
+                <div style={{ fontSize: '12px', color: theme.textMuted, transition: 'color 0.3s ease' }}>
                   Submitted {formatTimeAgo(dispute.createdAt)}
                 </div>
 
@@ -256,7 +267,7 @@ function DisputesList({ projectId, onClose }) {
                     <h5 style={{ color: '#4ECDC4', fontSize: '14px', marginBottom: '8px' }}>
                       Admin Response
                     </h5>
-                    <p style={{ color: 'white', fontSize: '13px', marginBottom: 0 }}>
+                    <p style={{ color: theme.textPrimary, fontSize: '13px', marginBottom: 0, transition: 'color 0.3s ease' }}>
                       {dispute.adminResponse.message}
                     </p>
                   </div>
