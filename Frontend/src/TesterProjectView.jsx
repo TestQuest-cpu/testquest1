@@ -1386,7 +1386,6 @@ function BugReportDetailsModal({ report, project, onClose, getSeverityBadge, get
 function ApprovedBugsSection({ project, isLightMode }) {
   const [approvedBugs, setApprovedBugs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expanded, setExpanded] = useState(false);
   const [selectedBug, setSelectedBug] = useState(null);
   const theme = getTesterTheme(isLightMode);
 
@@ -1518,26 +1517,6 @@ function ApprovedBugsSection({ project, isLightMode }) {
         }}>
           Approved ({approvedBugs.length})
         </h2>
-        {approvedBugs.length > 3 && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            style={{
-              background: theme.buttonLight,
-              color: theme.textPrimary,
-              border: `1px solid ${theme.border}`,
-              borderRadius: '6px',
-              padding: '6px 12px',
-              fontSize: '11px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => e.target.style.background = theme.buttonLightHover}
-            onMouseLeave={(e) => e.target.style.background = theme.buttonLight}
-          >
-            {expanded ? '▲' : '▼'}
-          </button>
-        )}
       </div>
 
       {/* Loading State */}
@@ -1552,7 +1531,7 @@ function ApprovedBugsSection({ project, isLightMode }) {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {(expanded ? approvedBugs : approvedBugs.slice(0, 5)).map((bug) => (
+            {approvedBugs.map((bug) => (
               <div
                 key={bug._id}
                 onClick={() => setSelectedBug(bug)}
