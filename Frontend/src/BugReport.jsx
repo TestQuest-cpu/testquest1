@@ -570,10 +570,11 @@ function BugReport({ onBack, projectId, onProfile, onLeaderboards }) {
               marginBottom: '28px',
               position: 'relative',
               zIndex: 1,
-              background: 'rgba(255, 255, 255, 0.02)',
+              background: theme.statsCardBg,
               borderRadius: '12px',
               padding: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.08)'
+              border: `1px solid ${theme.border}`,
+              transition: 'all 0.3s ease'
             }}>
               <div style={{
                 display: 'flex',
@@ -581,12 +582,13 @@ function BugReport({ onBack, projectId, onProfile, onLeaderboards }) {
                 alignItems: 'center',
                 marginBottom: '16px',
                 paddingBottom: '12px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                borderBottom: `1px solid ${theme.border}`
               }}>
                 <span style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
+                  color: theme.textSecondary,
                   fontSize: '0.9rem',
-                  fontWeight: '500'
+                  fontWeight: '500',
+                  transition: 'color 0.3s ease'
                 }}>Platform</span>
                 <div style={{
                   background: 'linear-gradient(135deg, rgba(76, 205, 196, 0.2), rgba(68, 160, 141, 0.3))',
@@ -608,9 +610,10 @@ function BugReport({ onBack, projectId, onProfile, onLeaderboards }) {
                 marginBottom: '16px'
               }}>
                 <span style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
+                  color: theme.textSecondary,
                   fontSize: '0.9rem',
-                  fontWeight: '500'
+                  fontWeight: '500',
+                  transition: 'color 0.3s ease'
                 }}>Total Bounty</span>
                 <div style={{
                   background: 'linear-gradient(135deg, rgba(76, 205, 196, 0.2), rgba(68, 160, 141, 0.3))',
@@ -631,9 +634,10 @@ function BugReport({ onBack, projectId, onProfile, onLeaderboards }) {
                 alignItems: 'center'
               }}>
                 <span style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
+                  color: theme.textSecondary,
                   fontSize: '0.9rem',
-                  fontWeight: '500'
+                  fontWeight: '500',
+                  transition: 'color 0.3s ease'
                 }}>Remaining</span>
                 <div style={{
                   background: 'linear-gradient(135deg, rgba(76, 205, 196, 0.2), rgba(68, 160, 141, 0.3))',
