@@ -508,12 +508,13 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
               alignItems: 'center',
               marginBottom: '16px',
               paddingBottom: '12px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+              borderBottom: `1px solid ${theme.border}`
             }}>
               <span style={{
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: theme.textSecondary,
                 fontSize: '0.9rem',
-                fontWeight: '500'
+                fontWeight: '500',
+                transition: 'color 0.3s ease'
               }}>Platform</span>
               <div style={{
                 background: 'linear-gradient(135deg, rgba(76, 205, 196, 0.2), rgba(68, 160, 141, 0.3))',
@@ -535,9 +536,10 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
               marginBottom: '16px'
             }}>
               <span style={{
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: theme.textSecondary,
                 fontSize: '0.9rem',
-                fontWeight: '500'
+                fontWeight: '500',
+                transition: 'color 0.3s ease'
               }}>Total Bounty</span>
               <div style={{
                 background: 'linear-gradient(135deg, rgba(76, 205, 196, 0.2), rgba(68, 160, 141, 0.3))',
@@ -561,9 +563,10 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
               alignItems: 'center'
             }}>
               <span style={{
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: theme.textSecondary,
                 fontSize: '0.9rem',
-                fontWeight: '500'
+                fontWeight: '500',
+                transition: 'color 0.3s ease'
               }}>Remaining</span>
               <div style={{
                 background: 'linear-gradient(135deg, rgba(76, 205, 196, 0.2), rgba(68, 160, 141, 0.3))',
@@ -627,9 +630,10 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                   }}>Critical</span>
                 </div>
                 <span style={{
-                  color: 'white',
+                  color: theme.textPrimary,
                   fontSize: '1rem',
-                  fontWeight: '700'
+                  fontWeight: '700',
+                  transition: 'color 0.3s ease'
                 }}>{(project.bugRewards?.critical || 0).toLocaleString()} credits</span>
               </div>
 
@@ -657,9 +661,10 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                   }}>Major</span>
                 </div>
                 <span style={{
-                  color: 'white',
+                  color: theme.textPrimary,
                   fontSize: '1rem',
-                  fontWeight: '700'
+                  fontWeight: '700',
+                  transition: 'color 0.3s ease'
                 }}>{(project.bugRewards?.major || 0).toLocaleString()} credits</span>
               </div>
 
@@ -687,9 +692,10 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                   }}>Minor</span>
                 </div>
                 <span style={{
-                  color: 'white',
+                  color: theme.textPrimary,
                   fontSize: '1rem',
-                  fontWeight: '700'
+                  fontWeight: '700',
+                  transition: 'color 0.3s ease'
                 }}>{(project.bugRewards?.minor || 0).toLocaleString()} credits</span>
               </div>
             </div>
@@ -1154,7 +1160,7 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ fontSize: '12px', color: theme.textMuted, transition: 'color 0.3s ease' }}>
-                        By {'Anonymous Tester'} • {formatTimeAgo(report.createdAt)}
+                        Submitted {formatTimeAgo(report.createdAt)}
                       </div>
                       <div style={{
                         color: '#4ECDC4',

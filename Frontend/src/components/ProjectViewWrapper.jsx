@@ -5,7 +5,7 @@ import TesterProjectView from '../TesterProjectView.jsx';
 import BugReport from '../BugReport.jsx';
 
 // Wrapper to extract projectId from URL params for ProjectView
-export function ProjectViewWrapper({ onBack }) {
+export function ProjectViewWrapper({ onBack, onLeaderboards, onPost, onProfile }) {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +44,7 @@ export function ProjectViewWrapper({ onBack }) {
     return <div style={{ padding: '20px', textAlign: 'center' }}>Project not found</div>;
   }
 
-  return <ProjectView project={project} onBack={onBack} />;
+  return <ProjectView project={project} onBack={onBack} onLeaderboards={onLeaderboards} onPost={onPost} onProfile={onProfile} />;
 }
 
 // Wrapper to extract projectId from URL params for TesterProjectView

@@ -321,6 +321,9 @@ function App() {
           <DeveloperRoute>
             <ProjectViewWrapper
               onBack={() => navigate('/developer/dashboard')}
+              onLeaderboards={handleLeaderboards}
+              onPost={() => navigate('/developer/post')}
+              onProfile={() => navigate('/developer/profile')}
             />
           </DeveloperRoute>
         }
