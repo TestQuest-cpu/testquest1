@@ -680,7 +680,7 @@ function TesterProjectView({ project: initialProject, projectId, onBack, onLeade
                       e.target.style.boxShadow = '0 4px 15px rgba(245, 158, 11, 0.4)';
                     }}
                   >
-                    ⚠️ Report Project
+                    Report Project
                   </button>
                 </div>
               </div>
@@ -768,7 +768,6 @@ function TesterProjectView({ project: initialProject, projectId, onBack, onLeade
                 </div>
               ) : error ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px', color: '#FF6B6B' }}>
-                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
                   <h3 style={{ marginBottom: '8px' }}>Error Loading Bug Reports</h3>
                   <p style={{ marginBottom: '20px', opacity: 0.8 }}>{error}</p>
                   <button
@@ -799,7 +798,6 @@ function TesterProjectView({ project: initialProject, projectId, onBack, onLeade
                 </div>
               ) : filteredReports.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-                  <div style={{ fontSize: '64px', marginBottom: '16px' }}>🐛</div>
                   <h3 style={{
                     color: theme.textPrimary,
                     fontSize: '20px',
@@ -941,9 +939,11 @@ function TesterProjectView({ project: initialProject, projectId, onBack, onLeade
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   background: 'rgba(78, 205, 196, 0.1)',
-                                  fontSize: '32px'
+                                  fontSize: '12px',
+                                  fontWeight: '600',
+                                  color: '#4ECDC4'
                                 }}>
-                                  {attachment.mimetype.startsWith('video/') ? '🎥' : '📄'}
+                                  {attachment.mimetype.startsWith('video/') ? 'VIDEO' : 'FILE'}
                                 </div>
                               )}
                             </div>
@@ -1055,7 +1055,7 @@ function BugReportDetailsModal({ report, project, onClose, getSeverityBadge, get
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.8)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -1074,7 +1074,7 @@ function BugReportDetailsModal({ report, project, onClose, getSeverityBadge, get
           width: '100%',
           maxHeight: '85vh',
           overflowY: 'auto',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+          boxShadow: isLightMode ? '0 20px 60px rgba(0, 0, 0, 0.15)' : '0 20px 60px rgba(0, 0, 0, 0.5)',
           transition: 'all 0.3s ease'
         }}
       >
@@ -1322,9 +1322,11 @@ function BugReportDetailsModal({ report, project, onClose, getSeverityBadge, get
                         alignItems: 'center',
                         justifyContent: 'center',
                         background: 'rgba(78, 205, 196, 0.1)',
-                        fontSize: '32px'
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        color: '#4ECDC4'
                       }}>
-                        {attachment.mimetype?.startsWith('video/') ? '🎥' : '📄'}
+                        {attachment.mimetype?.startsWith('video/') ? 'VIDEO' : 'FILE'}
                       </div>
                     )}
                   </div>
@@ -1479,7 +1481,6 @@ function ApprovedBugsSection({ project }) {
           gap: '8px',
           marginBottom: '6px'
         }}>
-          <span style={{ fontSize: '20px' }}>⚠️</span>
           <h3 style={{
             color: 'white',
             fontSize: '14px',
@@ -1522,15 +1523,15 @@ function ApprovedBugsSection({ project }) {
           gap: '8px',
           transition: 'all 0.3s ease'
         }}>
-          <span>✅</span> Approved ({approvedBugs.length})
+          Approved ({approvedBugs.length})
         </h2>
         {approvedBugs.length > 3 && (
           <button
             onClick={() => setExpanded(!expanded)}
             style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              color: 'white',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              background: theme.buttonLight,
+              color: theme.textPrimary,
+              border: `1px solid ${theme.border}`,
               borderRadius: '6px',
               padding: '6px 12px',
               fontSize: '11px',
@@ -1538,8 +1539,8 @@ function ApprovedBugsSection({ project }) {
               cursor: 'pointer',
               transition: 'all 0.3s ease'
             }}
-            onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.15)'}
-            onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+            onMouseEnter={(e) => e.target.style.background = theme.buttonLightHover}
+            onMouseLeave={(e) => e.target.style.background = theme.buttonLight}
           >
             {expanded ? '▲' : '▼'}
           </button>
@@ -1618,8 +1619,7 @@ function ApprovedBugsSection({ project }) {
                   color: theme.textMuted,
                   transition: 'all 0.3s ease'
                 }}>
-                  <span>{bug.submittedBy?.name || 'Anonymous'}</span>
-                  <span>{formatTimeAgo(bug.createdAt)}</span>
+                  <span>Submitted {formatTimeAgo(bug.createdAt)}</span>
                 </div>
               </div>
             ))}
@@ -1637,7 +1637,7 @@ function ApprovedBugsSection({ project }) {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.8)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1656,7 +1656,7 @@ function ApprovedBugsSection({ project }) {
               width: '100%',
               maxHeight: '85vh',
               overflowY: 'auto',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+              boxShadow: isLightMode ? '0 20px 60px rgba(0, 0, 0, 0.15)' : '0 20px 60px rgba(0, 0, 0, 0.5)',
               transition: 'all 0.3s ease'
             }}
           >
@@ -1684,14 +1684,7 @@ function ApprovedBugsSection({ project }) {
                     fontSize: '13px',
                     transition: 'all 0.3s ease'
                   }}>
-                    Found by: {selectedBug.submittedBy?.name || 'Anonymous'}
-                  </span>
-                  <span style={{
-                    color: theme.textMuted,
-                    fontSize: '13px',
-                    transition: 'all 0.3s ease'
-                  }}>
-                    • {formatTimeAgo(selectedBug.createdAt)}
+                    Submitted {formatTimeAgo(selectedBug.createdAt)}
                   </span>
                 </div>
               </div>
@@ -1896,9 +1889,11 @@ function ApprovedBugsSection({ project }) {
                             alignItems: 'center',
                             justifyContent: 'center',
                             background: 'rgba(78, 205, 196, 0.1)',
-                            fontSize: '24px'
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            color: '#4ECDC4'
                           }}>
-                            {attachment.mimetype?.startsWith('video/') ? '🎥' : '📄'}
+                            {attachment.mimetype?.startsWith('video/') ? 'VIDEO' : 'FILE'}
                           </div>
                         )}
                       </div>
@@ -1921,7 +1916,7 @@ function ApprovedBugsSection({ project }) {
                   margin: 0,
                   lineHeight: '1.5'
                 }}>
-                  ⚠️ <strong>Warning:</strong> This bug has already been reported and approved. Submitting a similar bug report will result in reputation deduction and no reward.
+                  <strong>Warning:</strong> This bug has already been reported and approved. Submitting a similar bug report will result in reputation deduction and no reward.
                 </p>
               </div>
             </div>
