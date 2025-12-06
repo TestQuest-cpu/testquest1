@@ -219,7 +219,7 @@ function Profile({ onBack, onLogout, onLeaderboards, onModeratorExam, onModerato
 
       // Fetch projects for developers
       console.log('Activity Debug - Fetching projects...');
-      const projectsResponse = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/projects`, {
+      const projectsResponse = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/projects?myProjects=true`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
