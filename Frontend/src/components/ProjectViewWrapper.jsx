@@ -3,12 +3,15 @@ import { useParams } from 'react-router-dom';
 import ProjectView from '../ProjectView.jsx';
 import TesterProjectView from '../TesterProjectView.jsx';
 import BugReport from '../BugReport.jsx';
+import { getDeveloperTheme } from '../themeConfig';
 
 // Wrapper to extract projectId from URL params for ProjectView
 export function ProjectViewWrapper({ onBack, onLeaderboards, onPost, onProfile }) {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLightMode] = useState(localStorage.getItem('developerLightMode') === 'true');
+  const theme = getDeveloperTheme(isLightMode);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -37,11 +40,37 @@ export function ProjectViewWrapper({ onBack, onLeaderboards, onPost, onProfile }
   }, [projectId]);
 
   if (loading) {
-    return <div style={{ padding: '20px', textAlign: 'center' }}>Loading project...</div>;
+    return (
+      <div style={{
+        padding: '20px',
+        textAlign: 'center',
+        backgroundColor: theme.background,
+        minHeight: '100vh',
+        color: theme.textPrimary,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        Loading project...
+      </div>
+    );
   }
 
   if (!project) {
-    return <div style={{ padding: '20px', textAlign: 'center' }}>Project not found</div>;
+    return (
+      <div style={{
+        padding: '20px',
+        textAlign: 'center',
+        backgroundColor: theme.background,
+        minHeight: '100vh',
+        color: theme.textPrimary,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        Project not found
+      </div>
+    );
   }
 
   return <ProjectView project={project} onBack={onBack} onLeaderboards={onLeaderboards} onPost={onPost} onProfile={onProfile} />;

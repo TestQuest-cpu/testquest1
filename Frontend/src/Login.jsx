@@ -301,7 +301,12 @@ function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, on
         return;
       }
 
-      // Login flow - store token and navigate
+      // Login flow - validate account type matches login page
+      if (data.user.accountType !== accountType) {
+        throw new Error(`This is a ${data.user.accountType} account. Please use the ${data.user.accountType} login page.`);
+      }
+
+      // Store token and navigate
       if (rememberMe) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
@@ -843,20 +848,21 @@ function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, on
           </div>
         </div>
 
-        {/* Moderator Access Link */}
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 1000
-        }}>
-          <button
-            onClick={() => onModeratorAccess && onModeratorAccess()}
-            style={{
-              padding: '10px 16px',
-              backgroundColor: 'rgba(102, 126, 234, 0.9)',
-              color: 'white',
-              border: 'none',
+        {/* Moderator Access Link - Only show on tester login */}
+        {accountType === 'tester' && (
+          <div style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            zIndex: 1000
+          }}>
+            <button
+              onClick={() => onModeratorAccess && onModeratorAccess()}
+              style={{
+                padding: '10px 16px',
+                backgroundColor: 'rgba(102, 126, 234, 0.9)',
+                color: 'white',
+                border: 'none',
               borderRadius: '20px',
               fontSize: '0.8rem',
               fontWeight: '500',
@@ -877,9 +883,10 @@ function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, on
               e.target.style.backgroundColor = 'rgba(102, 126, 234, 0.9)';
             }}
           >
-            🛡️ Moderator Portal
+            Moderator Portal
           </button>
         </div>
+        )}
       </div>
     </div>
   );
