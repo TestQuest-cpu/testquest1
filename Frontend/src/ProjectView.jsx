@@ -1265,7 +1265,7 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                   {getStatusBadge(selectedReport.status)}
                 </div>
                 <div style={{ fontSize: '14px', color: theme.textSecondary, transition: 'color 0.3s ease' }}>
-                  Submitted by {selectedReport.submittedBy?.name || 'Unknown'} • {formatTimeAgo(selectedReport.createdAt)}
+                  Submitted {formatTimeAgo(selectedReport.createdAt)}
                 </div>
               </div>
               <button
