@@ -128,7 +128,12 @@ function App() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
 
-    navigate('/login');
+    // Check if user is on developer or tester route and redirect accordingly
+    if (location.pathname.startsWith('/developer')) {
+      navigate('/login/developer');
+    } else {
+      navigate('/login/tester');
+    }
   };
 
   const handleAdminLogin = () => {

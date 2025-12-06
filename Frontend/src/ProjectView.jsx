@@ -921,9 +921,9 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                   style={{
                     background: severityFilter === sev.key
                       ? sev.color
-                      : 'rgba(255, 255, 255, 0.05)',
-                    color: 'white',
-                    border: severityFilter === sev.key ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                      : theme.buttonLight,
+                    color: severityFilter === sev.key ? 'white' : theme.textPrimary,
+                    border: severityFilter === sev.key ? 'none' : `1px solid ${theme.border}`,
                     padding: '6px 14px',
                     borderRadius: '6px',
                     cursor: 'pointer',
@@ -937,20 +937,20 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                   }}
                   onMouseEnter={(e) => {
                     if (severityFilter !== sev.key) {
-                      e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                      e.target.style.background = theme.buttonLightHover;
                       e.target.style.transform = 'translateY(-1px)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (severityFilter !== sev.key) {
-                      e.target.style.background = 'rgba(255, 255, 255, 0.05)';
+                      e.target.style.background = theme.buttonLight;
                       e.target.style.transform = 'translateY(0)';
                     }
                   }}
                 >
                   {sev.label}
                   <span style={{
-                    background: 'rgba(255, 255, 255, 0.2)',
+                    background: severityFilter === sev.key ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
                     borderRadius: '8px',
                     padding: '1px 5px',
                     fontSize: '11px'
@@ -1474,11 +1474,11 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                   borderRadius: '8px'
                 }}>
                   <h4 style={{ color: '#F59E0B', fontSize: '16px', marginBottom: '10px' }}>⚠️ Override Severity (Developer Authority)</h4>
-                  <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '13px', marginBottom: '12px' }}>
+                  <p style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '12px', transition: 'color 0.3s ease' }}>
                     If you believe the tester's severity assessment is incorrect, you can override it. This will affect the reward amount.
                   </p>
                   <div style={{ marginBottom: '10px' }}>
-                    <label style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px', marginBottom: '8px', display: 'block' }}>
+                    <label style={{ color: theme.textPrimary, fontSize: '14px', marginBottom: '8px', display: 'block', transition: 'color 0.3s ease' }}>
                       Current Severity: <strong style={{ color: '#F59E0B' }}>{selectedReport.severity.toUpperCase()}</strong>
                     </label>
                     <select
@@ -1487,19 +1487,19 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                       style={{
                         width: '100%',
                         padding: '10px',
-                        backgroundColor: theme.statsCardBg,
+                        backgroundColor: isLightMode ? '#ffffff' : theme.statsCardBg,
                         border: `1px solid ${theme.border}`,
                         borderRadius: '6px',
-                        color: theme.textPrimary,
+                        color: isLightMode ? '#000000' : theme.textPrimary,
                         fontSize: '14px',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
                       }}
                     >
-                      <option value={selectedReport.severity}>Keep Original ({selectedReport.severity})</option>
-                      <option value="critical">Critical</option>
-                      <option value="major">Major</option>
-                      <option value="minor">Minor</option>
+                      <option value={selectedReport.severity} style={{ backgroundColor: isLightMode ? '#ffffff' : '#1a1a1a', color: isLightMode ? '#000000' : '#ffffff' }}>Keep Original ({selectedReport.severity})</option>
+                      <option value="critical" style={{ backgroundColor: isLightMode ? '#ffffff' : '#1a1a1a', color: isLightMode ? '#000000' : '#ffffff' }}>Critical</option>
+                      <option value="major" style={{ backgroundColor: isLightMode ? '#ffffff' : '#1a1a1a', color: isLightMode ? '#000000' : '#ffffff' }}>Major</option>
+                      <option value="minor" style={{ backgroundColor: isLightMode ? '#ffffff' : '#1a1a1a', color: isLightMode ? '#000000' : '#ffffff' }}>Minor</option>
                     </select>
                   </div>
                   {overriddenSeverity && overriddenSeverity !== selectedReport.severity && (
