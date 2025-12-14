@@ -86,6 +86,17 @@ const pendingUserSchema = new mongoose.Schema({
 
 const PendingUser = mongoose.models.PendingUser || mongoose.model('PendingUser', pendingUserSchema);
 
+// PasswordReset Schema - for password reset requests
+const passwordResetSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  email: { type: String, required: true, lowercase: true },
+  resetToken: { type: String, required: true, unique: true },
+  expiresAt: { type: Date, required: true },
+  used: { type: Boolean, default: false }
+}, { timestamps: true });
+
+const PasswordReset = mongoose.models.PasswordReset || mongoose.model('PasswordReset', passwordResetSchema);
+
 // Moderator Schema
 const moderatorSchema = new mongoose.Schema({
   username: {
@@ -229,6 +240,10 @@ export default async function handler(req, res) {
         return await handleVerifyEmail(req, res);
       case 'moderator-login':
         return await handleModeratorLogin(req, res);
+      case 'forgot-password':
+        return await handleForgotPassword(req, res);
+      case 'reset-password':
+        return await handleResetPassword(req, res);
       default:
         return res.status(404).json({ message: 'Auth action not found' });
     }
@@ -510,6 +525,126 @@ async function handleModeratorLogin(req, res) {
   }
 }
 
+// Handle forgot password request
+async function handleForgotPassword(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { email, accountType } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  if (!accountType || !['tester', 'developer'].includes(accountType)) {
+    return res.status(400).json({ message: 'Valid account type is required' });
+  }
+
+  try {
+    // Find user by email and account type
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+      accountType: accountType
+    });
+
+    // Always return success message to prevent email enumeration
+    if (!user) {
+      return res.json({
+        message: 'If an account with that email exists, a password reset link has been sent.'
+      });
+    }
+
+    // Delete any existing reset tokens for this user
+    await PasswordReset.deleteMany({ userId: user._id });
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    // Create password reset record
+    const passwordReset = new PasswordReset({
+      userId: user._id,
+      email: user.email,
+      resetToken: resetToken,
+      expiresAt: expiresAt
+    });
+
+    await passwordReset.save();
+
+    // Send password reset email
+    await sendPasswordResetEmail(user, resetToken);
+
+    res.json({
+      message: 'If an account with that email exists, a password reset link has been sent.'
+    });
+
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+// Handle password reset
+async function handleResetPassword(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ message: 'Reset token and new password are required' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+  }
+
+  try {
+    // Find valid reset token
+    const passwordReset = await PasswordReset.findOne({
+      resetToken: token,
+      used: false
+    });
+
+    if (!passwordReset) {
+      return res.status(400).json({ message: 'Invalid or expired reset link' });
+    }
+
+    // Check if token is expired
+    if (new Date() > passwordReset.expiresAt) {
+      await PasswordReset.deleteOne({ _id: passwordReset._id });
+      return res.status(400).json({ message: 'Reset link has expired. Please request a new one.' });
+    }
+
+    // Find the user
+    const user = await User.findById(passwordReset.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update user's password (will be hashed by pre-save hook)
+    user.password = newPassword;
+    await user.save();
+
+    // Mark reset token as used
+    passwordReset.used = true;
+    await passwordReset.save();
+
+    // Delete all reset tokens for this user
+    await PasswordReset.deleteMany({ userId: user._id });
+
+    res.json({
+      message: 'Password reset successful. You can now log in with your new password.'
+    });
+
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
 // Send verification email
 async function sendVerificationEmail(pendingUser, token) {
   const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
@@ -581,6 +716,90 @@ async function sendVerificationEmail(pendingUser, token) {
     console.log('\n=== EMAIL FALLBACK - VERIFICATION LINK ===');
     console.log(`To: ${pendingUser.email}`);
     console.log(`Link: ${verificationUrl}`);
+    console.log('==========================================\n');
+  }
+}
+
+// Send password reset email
+async function sendPasswordResetEmail(user, token) {
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
+
+  // Create email transporter
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 0.9em; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🔐 Password Reset Request</h1>
+        </div>
+        <div class="content">
+          <p>Hi ${user.name},</p>
+
+          <p>We received a request to reset your password for your TestQuest account.</p>
+
+          <p style="text-align: center;">
+            <a href="${resetUrl}" class="button">Reset Your Password</a>
+          </p>
+
+          <p>Or copy and paste this link into your browser:</p>
+          <p style="word-break: break-all; background: white; padding: 10px; border-radius: 5px;">${resetUrl}</p>
+
+          <div class="warning">
+            <strong>⚠️ Important:</strong>
+            <ul>
+              <li>This link will expire in 1 hour</li>
+              <li>If you didn't request this password reset, please ignore this email</li>
+              <li>Your password won't change until you create a new one via the link above</li>
+            </ul>
+          </div>
+
+          <p>Best regards,<br>The TestQuest Team</p>
+        </div>
+        <div class="footer">
+          <p>This is an automated email. Please do not reply to this message.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"TestQuest" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+      to: user.email,
+      subject: 'Password Reset Request - TestQuest',
+      html: htmlContent,
+      text: `Hi ${user.name},\n\nWe received a request to reset your password for your TestQuest account.\n\nClick the link below to reset your password:\n${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this password reset, please ignore this email.\n\nBest regards,\nThe TestQuest Team`
+    });
+
+    console.log(`✓ Password reset email sent to ${user.email}`);
+  } catch (error) {
+    console.error('Password reset email sending failed:', error);
+    console.log('\n=== EMAIL FALLBACK - PASSWORD RESET LINK ===');
+    console.log(`To: ${user.email}`);
+    console.log(`Link: ${resetUrl}`);
     console.log('==========================================\n');
   }
 }

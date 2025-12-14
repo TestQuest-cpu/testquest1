@@ -18,6 +18,8 @@ import ModeratorExam from "./ModeratorExam.jsx";
 import ModeratorSetup from "./ModeratorSetup.jsx";
 import Leaderboards from "./Leaderboards.jsx";
 import VerifyEmail from "./VerifyEmail.jsx";
+import ForgotPassword from "./ForgotPassword.jsx";
+import ResetPassword from "./ResetPassword.jsx";
 import './index.css';
 
 function App() {
@@ -202,6 +204,10 @@ function App() {
     navigate('/moderator');
   };
 
+  const handleForgotPassword = () => {
+    navigate('/forgot-password');
+  };
+
   return (
     <Routes>
       {/* Landing Page */}
@@ -225,6 +231,7 @@ function App() {
             onLoginAsTester={handleLoginAsTester}
             onLoginAsDeveloper={handleLoginAsDeveloper}
             onModeratorAccess={handleModeratorAccess}
+            onForgotPassword={handleForgotPassword}
           />
         }
       />
@@ -236,12 +243,17 @@ function App() {
             onLoginAsTester={handleLoginAsTester}
             onLoginAsDeveloper={handleLoginAsDeveloper}
             onModeratorAccess={handleModeratorAccess}
+            onForgotPassword={handleForgotPassword}
           />
         }
       />
 
       {/* Email Verification */}
       <Route path="/verify-email" element={<VerifyEmail />} />
+
+      {/* Password Reset Routes */}
+      <Route path="/forgot-password" element={<ForgotPassword onBack={() => navigate(-1)} />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin onAdminLogin={handleAdminLogin} />} />

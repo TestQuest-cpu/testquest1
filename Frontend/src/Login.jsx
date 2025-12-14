@@ -151,7 +151,7 @@ const keyframes = `
 }
 `;
 
-function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, onLoginAsDeveloper, onModeratorAccess }) {
+function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, onLoginAsDeveloper, onModeratorAccess, onForgotPassword }) {
   const [activeTab, setActiveTab] = useState('login');
   const [accountType, setAccountType] = useState(initialAccountType);
   const [email, setEmail] = useState('');
@@ -673,11 +673,21 @@ function Login({ accountType: initialAccountType = 'tester', onLoginAsTester, on
               />
               Remember me
             </label>
-            <a href="#" style={{ 
-              color: '#7C3AED',
-              textDecoration: 'none',
-              fontSize: '0.9rem'
-            }}>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (onForgotPassword) {
+                  onForgotPassword();
+                }
+              }}
+              style={{
+                color: '#7C3AED',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}
+            >
               Forgot password?
             </a>
           </div>
