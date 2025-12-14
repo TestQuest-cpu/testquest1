@@ -1,23 +1,137 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+// CSS animations as JavaScript objects
+const fadeInUp = {
+  animation: 'fadeInUp 0.8s ease-out'
+};
+
+const fadeInLeft = {
+  animation: 'fadeInLeft 0.8s ease-out'
+};
+
+const fadeInRight = {
+  animation: 'fadeInRight 0.8s ease-out 0.2s both'
+};
+
+const pulseAnimation = {
+  animation: 'pulse 2s infinite'
+};
+
+const slideInScale = {
+  animation: 'slideInScale 0.6s ease-out'
+};
+
+// CSS keyframes
+const keyframes = `
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+  }
+}
+
+@keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.loading-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 1.5s infinite;
+}
+`;
 
 function ModeratorLogin({ onLogin }) {
-  const [credentials, setCredentials] = useState({
-    username: '',
-    password: ''
-  });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear error when user starts typing
-    if (error) setError('');
-  };
+  // Add keyframes to document head and check mobile
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = keyframes;
+    document.head.appendChild(style);
+
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      document.head.removeChild(style);
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +145,10 @@ function ModeratorLogin({ onLogin }) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(credentials)
+        body: JSON.stringify({
+          username,
+          password
+        })
       });
 
       const data = await response.json();
@@ -56,216 +173,300 @@ function ModeratorLogin({ onLogin }) {
 
   return (
     <div style={{
-      minHeight: '100vh',
-      background: '#0E0F15',
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px'
+      flexDirection: isMobile ? 'column' : 'row',
+      minHeight: '100vh',
+      backgroundColor: '#0E0F15',
+      overflow: isMobile ? 'auto' : 'hidden'
     }}>
+      {/* Left Panel */}
       <div style={{
-        width: '100%',
-        maxWidth: '400px',
-        background: '#2a2a2a',
-        borderRadius: '20px',
-        padding: '40px',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.2)'
+        width: isMobile ? '100%' : '40%',
+        minHeight: isMobile ? '200px' : 'auto',
+        backgroundColor: '#1F1F1F',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: isMobile ? '30px 20px' : '40px',
+        color: 'white',
+        borderRight: !isMobile ? '1px solid #2A2A2A' : 'none',
+        ...(!isMobile ? fadeInLeft : {})
       }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          
-          <h1 style={{
-            color: 'white',
-            fontSize: '1.8rem',
-            fontWeight: '700',
-            margin: '0 0 8px 0',
-            fontFamily: 'system-ui, -apple-system, sans-serif'
-          }}>
-            Moderator Portal
-          </h1>
-          <p style={{
-            color: 'white',
-            opacity: 0.9,
-            fontSize: '0.9rem',
-            margin: 0,
-            fontFamily: 'system-ui, -apple-system, sans-serif'
-          }}>
-            TestQuest Dispute Management System
-          </p>
-        </div>
+        <h1 style={{
+          fontSize: isMobile ? '1.8rem' : '2.5rem',
+          fontWeight: 'bold',
+          marginBottom: isMobile ? '15px' : '30px',
+          letterSpacing: isMobile ? '2px' : '3px',
+          textAlign: 'center',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          fontFamily: 'Sansita, sans-serif'
+        }}>
+          MODERATOR ACCESS
+        </h1>
 
-        {/* Error Message */}
-        {error && (
-          <div style={{
-            backgroundColor: '#FEE2E2',
-            border: '1px solid #FCA5A5',
-            borderRadius: '8px',
-            padding: '12px',
-            marginBottom: '20px',
-            color: '#B91C1C',
-            fontSize: '0.9rem',
-            textAlign: 'center'
-          }}>
-            {error}
-          </div>
-        )}
+        <p style={{
+          fontSize: isMobile ? '0.9rem' : '1rem',
+          marginBottom: isMobile ? '25px' : '50px',
+          opacity: 0.9,
+          textAlign: 'center',
+          maxWidth: '300px',
+          fontFamily: 'DM Sans, sans-serif'
+        }}>
+          Secure moderation portal for TestQuest dispute management
+        </p>
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit}>
-          {/* Username Field */}
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{
-              display: 'block',
-              color: 'white',
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              marginBottom: '6px',
-              fontFamily: 'system-ui, -apple-system, sans-serif'
-            }}>
-              Username or Email
-            </label>
-            <input
-              type="text"
-              name="username"
-              value={credentials.username}
-              onChange={handleInputChange}
-              placeholder="Enter your username or email"
-              required
-              style={{
-                background: '#1f1f1f',
-                width: '100%',
-                padding: '12px 16px',
-                border: '1px solid #3a3a3a',
-                borderRadius: '10px',
-                fontSize: '1rem',
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-                transition: 'all 0.3s ease',
-                outline: 'none'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
-            />
-          </div>
+        {!isMobile && (
+          <div style={{ width: '100%', maxWidth: '350px' }}>
+            <div style={{textAlign: 'center', marginBottom: '20px' }}>
+              <span style={{ fontSize: '0.95rem', fontFamily: 'DM Sans, sans-serif', color: 'rgba(255, 255, 255, 0.7)', }}>Dispute resolution tools</span>
+            </div>
 
-          {/* Password Field */}
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{
-              display: 'block',
-              color: 'white',
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              marginBottom: '6px',
-              fontFamily: 'system-ui, -apple-system, sans-serif'
-            }}>
-              Password
-            </label>
-            <div style={{ position: 'relative' }}>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={credentials.password}
-                onChange={handleInputChange}
-                placeholder="Enter your password"
-                required
-                style={{
-                  background: '#1f1f1f',
-                  width: '100%',
-                  padding: '12px 50px 12px 16px',
-                  border: '1px solid #3a3a3a',
-                  borderRadius: '10px',
-                  fontSize: '1rem',
-                  fontFamily: 'system-ui, -apple-system, sans-serif',
-                  transition: 'all 0.3s ease',
-                  outline: 'none'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '1.2rem',
-                  color: '#9CA3AF'
-                }}
-              >
-                {showPassword ? '👁️' : '👁️‍🗨️'}
-              </button>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <span style={{ fontSize: '0.95rem', fontFamily: 'DM Sans, sans-serif', color: 'rgba(255, 255, 255, 0.7)', }}>Fair and transparent process</span>
+            </div>
+
+            <div style={{ textAlign: 'center' }}>
+              <span style={{ fontSize: '0.95rem', fontFamily: 'DM Sans, sans-serif', color: 'rgba(255, 255, 255, 0.7)', }}>Moderation activity tracking</span>
             </div>
           </div>
-
-          {/* Login Button */}
-          <button
-            type="submit"
-            disabled={loading || !credentials.username || !credentials.password}
-            style={{
-              width: '100%',
-              padding: '14px',
-              background: loading
-                ? '#9CA3AF'
-                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '10px',
-              fontSize: '1rem',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.3s ease',
-              fontFamily: 'system-ui, -apple-system, sans-serif',
-              opacity: loading ? 0.8 : 1
-            }}
-          >
-            {loading ? (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                <div style={{
-                  width: '18px',
-                  height: '18px',
-                  border: '2px solid transparent',
-                  borderTop: '2px solid white',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite'
-                }}>
-                </div>
-                Signing in...
-              </div>
-            ) : (
-              'Sign In to Moderator Portal'
-            )}
-          </button>
-        </form>
-
-        {/* Footer */}
-        <div style={{
-          textAlign: 'center',
-          marginTop: '25px',
-          paddingTop: '20px',
-          borderTop: '1px solid #E5E7EB'
-        }}>
-          <p style={{
-            color: '#9CA3AF',
-            fontSize: '0.8rem',
-            margin: 0,
-            fontFamily: 'system-ui, -apple-system, sans-serif'
-          }}>
-            Authorized moderators only • Secure access required
-          </p>
-        </div>
+        )}
       </div>
 
-      {/* CSS Animation */}
-      <style jsx>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+      {/* Right Panel */}
+      <div style={{
+        width: isMobile ? '100%' : '60%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: isMobile ? 'flex-start' : 'center',
+        padding: isMobile ? '20px' : '40px',
+        paddingTop: isMobile ? '30px' : '40px',
+        ...(!isMobile ? fadeInRight : {})
+      }}>
+        <div style={{
+          width: '100%',
+          maxWidth: isMobile ? '100%' : '450px',
+          ...(!isMobile ? slideInScale : {})
+        }}>
+          <div style={{
+            textAlign: 'center',
+            marginBottom: isMobile ? '30px' : '40px'
+          }}>
+            <h2 style={{
+              fontSize: '2rem',
+              fontWeight: 'bold',
+              marginBottom: '10px',
+              color: 'white',
+              fontFamily: 'Sansita, sans-serif'
+            }}>
+              Moderator Login
+            </h2>
+
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: '0.95rem',
+              fontFamily: 'DM Sans, sans-serif'
+            }}>
+              Enter your moderator credentials
+            </p>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div style={{
+              backgroundColor: 'rgba(255, 107, 107, 0.1)',
+              border: '1px solid rgba(255, 107, 107, 0.3)',
+              color: '#FF6B6B',
+              padding: '12px',
+              borderRadius: '10px',
+              marginBottom: '20px',
+              fontSize: '0.9rem',
+              textAlign: 'left',
+              fontFamily: 'DM Sans, sans-serif'
+            }}>
+              <strong>Error:</strong> {error}
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '8px',
+                fontSize: '0.9rem',
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontWeight: '500',
+                fontFamily: 'DM Sans, sans-serif'
+              }}>
+                Username or Email
+              </label>
+              <input
+                type="text"
+                placeholder="Enter moderator username or email"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px 15px',
+                  border: '1px solid #2A2A2A',
+                  borderRadius: '10px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  backgroundColor: '#1F1F1F',
+                  color: 'white',
+                  fontFamily: 'DM Sans, sans-serif',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#667eea';
+                  e.target.style.transform = 'translateY(-1px)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.25)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#2A2A2A';
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '30px' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '8px',
+                fontSize: '0.9rem',
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontWeight: '500',
+                fontFamily: 'DM Sans, sans-serif'
+              }}>
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="Enter moderator password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                style={{
+                  width: '100%',
+                  padding: '12px 15px',
+                  border: '1px solid #2A2A2A',
+                  borderRadius: '10px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  backgroundColor: '#1F1F1F',
+                  color: 'white',
+                  fontFamily: 'DM Sans, sans-serif',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#667eea';
+                  e.target.style.transform = 'translateY(-1px)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.25)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#2A2A2A';
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            {/* Sign In Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={loading ? 'loading-shimmer' : ''}
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: loading ? '#2A2A2A' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                fontFamily: 'Sansita, sans-serif',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                marginBottom: '20px',
+                position: 'relative',
+                overflow: 'hidden',
+                transform: loading ? 'scale(0.98)' : 'scale(1)',
+                boxShadow: loading ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)',
+                ...(loading ? {} : pulseAnimation)
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.target.style.transform = 'scale(1.02) translateY(-2px)';
+                  e.target.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.5)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
+                }
+              }}
+            >
+              {loading ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                  <div style={{
+                    width: '20px',
+                    height: '20px',
+                    border: '2px solid transparent',
+                    borderTop: '2px solid white',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }}></div>
+                  Authenticating...
+                </div>
+              ) : (
+                'Sign In as Moderator'
+              )}
+            </button>
+          </form>
+
+          {/* Info Notice */}
+          <div style={{
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            border: '1px solid rgba(102, 126, 234, 0.3)',
+            color: '#667eea',
+            padding: '12px',
+            borderRadius: '10px',
+            fontSize: '0.85rem',
+            textAlign: 'center',
+            marginTop: '20px',
+            fontFamily: 'DM Sans, sans-serif'
+          }}>
+            Moderator access only. All activity is logged and monitored.
+          </div>
+
+          {/* Back to Main Site */}
+          <div style={{ textAlign: 'center', marginTop: '30px' }}>
+            <a
+              href="/"
+              style={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'color 0.3s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.color = 'white'}
+              onMouseLeave={(e) => e.target.style.color = 'rgba(255, 255, 255, 0.7)'}
+            >
+              ← Back to TestQuest
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
