@@ -25,15 +25,13 @@ function ModeratorLogin({ onLogin }) {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/bug-reports`, {
+      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : window.location.origin);
+      const response = await fetch(`${apiUrl}/api/moderator/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          type: 'moderator_login',
-          ...credentials
-        })
+        body: JSON.stringify(credentials)
       });
 
       const data = await response.json();

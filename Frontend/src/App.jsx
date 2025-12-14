@@ -13,6 +13,7 @@ import Logs from "./Logs.jsx";
 import AdminLogin from "./AdminLogin.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
 import ModeratorApp from "./ModeratorApp.jsx";
+import ModeratorLogin from "./ModeratorLogin.jsx";
 import ModeratorExam from "./ModeratorExam.jsx";
 import ModeratorSetup from "./ModeratorSetup.jsx";
 import Leaderboards from "./Leaderboards.jsx";
@@ -193,6 +194,10 @@ function App() {
   };
 
   const handleModeratorAccess = () => {
+    navigate('/moderator/login');
+  };
+
+  const handleModeratorLogin = () => {
     sessionStorage.setItem('inModeratorMode', 'true');
     navigate('/moderator');
   };
@@ -396,6 +401,10 @@ function App() {
       />
 
       {/* Moderator Routes */}
+      <Route
+        path="/moderator/login"
+        element={<ModeratorLogin onLogin={handleModeratorLogin} />}
+      />
       <Route
         path="/moderator/exam"
         element={
