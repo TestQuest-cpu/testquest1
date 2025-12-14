@@ -668,9 +668,9 @@ async function sendVerificationEmail(pendingUser, token) {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .header { background: #0E1420; color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
         .content { background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none; }
-        .button { display: inline-block; background: #7C3AED; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+        .button { display: inline-block; background: #7C3AED; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
         .footer { text-align: center; color: #999; font-size: 12px; margin-top: 20px; }
         .link { color: #7C3AED; word-break: break-all; }
       </style>
@@ -742,9 +742,9 @@ async function sendPasswordResetEmail(user, token) {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .header { background: #0E1420; color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
         .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-        .button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        .button { display: inline-block; background: #7C3AED; color: #ffffff !important; padding: 14px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
         .footer { text-align: center; margin-top: 20px; color: #666; font-size: 0.9em; }
         .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
       </style>
