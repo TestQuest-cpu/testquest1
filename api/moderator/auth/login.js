@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
-import bcryptjs from 'bcryptjs';
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const bcryptjs = require('bcryptjs');
 
 // Moderator Schema
 const moderatorSchema = new mongoose.Schema({
@@ -103,7 +103,7 @@ async function connectToDatabase() {
   }
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
     // Set JSON content type
     res.setHeader('Content-Type', 'application/json');
