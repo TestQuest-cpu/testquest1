@@ -86,6 +86,85 @@ const pendingUserSchema = new mongoose.Schema({
 
 const PendingUser = mongoose.models.PendingUser || mongoose.model('PendingUser', pendingUserSchema);
 
+// Moderator Schema
+const moderatorSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 30
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6
+  },
+  permissions: {
+    viewDisputes: { type: Boolean, default: true },
+    resolveDisputes: { type: Boolean, default: true },
+    deleteDisputes: { type: Boolean, default: true },
+    banUsers: { type: Boolean, default: true },
+    viewAnalytics: { type: Boolean, default: true }
+  },
+  status: {
+    type: String,
+    enum: ['active', 'suspended', 'inactive'],
+    default: 'active'
+  },
+  lastLogin: {
+    type: Date
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Admin'
+  },
+  profile: {
+    firstName: String,
+    lastName: String,
+    avatar: String,
+    timezone: { type: String, default: 'UTC' }
+  },
+  stats: {
+    totalDisputes: { type: Number, default: 0 },
+    resolvedDisputes: { type: Number, default: 0 },
+    averageResolutionTime: { type: Number, default: 0 },
+    lastActivity: Date
+  }
+}, {
+  timestamps: true
+});
+
+// Compare password method for moderator
+moderatorSchema.methods.comparePassword = async function(candidatePassword) {
+  return bcryptjs.compare(candidatePassword, this.password);
+};
+
+// Update last login for moderator
+moderatorSchema.methods.updateLastLogin = function() {
+  this.lastLogin = new Date();
+  this.stats.lastActivity = new Date();
+  return this.save();
+};
+
+// Get full name for moderator
+moderatorSchema.virtual('fullName').get(function() {
+  if (this.profile?.firstName && this.profile?.lastName) {
+    return `${this.profile.firstName} ${this.profile.lastName}`;
+  }
+  return this.username;
+});
+
+const Moderator = mongoose.models.Moderator || mongoose.model('Moderator', moderatorSchema);
+
 let isConnected = false;
 
 async function connectToDatabase() {
@@ -148,6 +227,8 @@ export default async function handler(req, res) {
         return await handleRegister(req, res);
       case 'verify-email':
         return await handleVerifyEmail(req, res);
+      case 'moderator-login':
+        return await handleModeratorLogin(req, res);
       default:
         return res.status(404).json({ message: 'Auth action not found' });
     }
@@ -346,6 +427,86 @@ async function handleVerifyEmail(req, res) {
   } catch (error) {
     console.error('Email verification error:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+// Handle moderator login
+async function handleModeratorLogin(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({
+      error: 'Username and password are required'
+    });
+  }
+
+  try {
+    // Find moderator by username or email
+    const moderator = await Moderator.findOne({
+      $or: [
+        { username: username.toLowerCase().trim() },
+        { email: username.toLowerCase().trim() }
+      ]
+    });
+
+    if (!moderator) {
+      return res.status(401).json({
+        error: 'Invalid credentials'
+      });
+    }
+
+    // Check if moderator is active
+    if (moderator.status !== 'active') {
+      return res.status(403).json({
+        error: 'Account is suspended or inactive'
+      });
+    }
+
+    // Verify password
+    const isPasswordValid = await moderator.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        error: 'Invalid credentials'
+      });
+    }
+
+    // Update last login
+    await moderator.updateLastLogin();
+
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        moderatorId: moderator._id,
+        username: moderator.username,
+        type: 'moderator'
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
+    res.json({
+      message: 'Login successful',
+      token,
+      moderator: {
+        id: moderator._id,
+        username: moderator.username,
+        email: moderator.email,
+        fullName: moderator.fullName,
+        permissions: moderator.permissions,
+        lastLogin: moderator.lastLogin,
+        profile: moderator.profile
+      }
+    });
+
+  } catch (error) {
+    console.error('Moderator login error:', error);
+    res.status(500).json({
+      error: 'Server error during login'
+    });
   }
 }
 
