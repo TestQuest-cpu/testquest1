@@ -752,7 +752,7 @@ async function sendPasswordResetEmail(user, token) {
     <body>
       <div class="container">
         <div class="header">
-          <h1>🔐 Password Reset Request</h1>
+          <h1>Password Reset Request</h1>
         </div>
         <div class="content">
           <p>Hi ${user.name},</p>
@@ -767,7 +767,7 @@ async function sendPasswordResetEmail(user, token) {
           <p style="word-break: break-all; background: white; padding: 10px; border-radius: 5px;">${resetUrl}</p>
 
           <div class="warning">
-            <strong>⚠️ Important:</strong>
+            <strong>Important:</strong>
             <ul>
               <li>This link will expire in 1 hour</li>
               <li>If you didn't request this password reset, please ignore this email</li>
