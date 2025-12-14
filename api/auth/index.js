@@ -112,12 +112,22 @@ export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', 'true');
 
-    // Allow current deployment URLs
+    // Allow current deployment URLs and localhost for development
     const origin = req.headers.origin;
-    if (origin && (origin.includes('test-quest') && origin.includes('vercel.app'))) {
+    const allowedOrigins = [
+      'https://testquest-five.vercel.app',
+      'https://testquest1.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ];
+
+    if (origin && (allowedOrigins.includes(origin) || (origin.includes('testquest') && origin.includes('vercel.app')))) {
       res.setHeader('Access-Control-Allow-Origin', origin);
+    } else if (!origin) {
+      // Allow requests with no origin (like mobile apps or curl)
+      res.setHeader('Access-Control-Allow-Origin', '*');
     } else {
-      res.setHeader('Access-Control-Allow-Origin', 'https://test-quest-seven.vercel.app');
+      res.setHeader('Access-Control-Allow-Origin', allowedOrigins[0]);
     }
 
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -161,30 +171,33 @@ async function handleLogin(req, res) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { email, password } = req.body;
+  const { email, password, accountType } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
   try {
-    // Find user by email
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // Find user by email and account type
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+      accountType: accountType
+    });
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Check password
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { 
-        userId: user._id, 
+      {
+        userId: user._id,
         email: user.email,
         accountType: user.accountType
       },
