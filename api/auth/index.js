@@ -678,6 +678,7 @@ async function sendVerificationEmail(pendingUser, token) {
     <body>
       <div class="container">
         <div class="header">
+          <img src="${process.env.FRONTEND_URL || 'http://localhost:5173'}/favicon.png" alt="TestQuest Logo" style="width: 80px; height: 80px; margin-bottom: 15px; object-fit: contain;">
           <h1 style="margin: 0;">Welcome to TestQuest!</h1>
         </div>
         <div class="content">
@@ -752,6 +753,7 @@ async function sendPasswordResetEmail(user, token) {
     <body>
       <div class="container">
         <div class="header">
+          <img src="${process.env.FRONTEND_URL || 'http://localhost:5173'}/favicon.png" alt="TestQuest Logo" style="width: 80px; height: 80px; margin-bottom: 15px; object-fit: contain;">
           <h1>Password Reset Request</h1>
         </div>
         <div class="content">
