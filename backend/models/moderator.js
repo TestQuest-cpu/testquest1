@@ -22,6 +22,11 @@ const moderatorSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false
+  },
   permissions: {
     viewDisputes: { type: Boolean, default: true },
     resolveDisputes: { type: Boolean, default: true },

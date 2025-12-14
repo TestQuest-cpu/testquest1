@@ -27,13 +27,13 @@ router.post('/login', loginLimiter, async (req, res) => {
       });
     }
 
-    // Find moderator by username or email
+    // Find moderator by username or email, populate linked User for balance
     const moderator = await Moderator.findOne({
       $or: [
         { username: username.toLowerCase().trim() },
         { email: username.toLowerCase().trim() }
       ]
-    });
+    }).populate('userId', 'balance totalEarnings');
 
     if (!moderator) {
       return res.status(401).json({
@@ -59,6 +59,10 @@ router.post('/login', loginLimiter, async (req, res) => {
     // Update last login
     await moderator.updateLastLogin();
 
+    // Get balance from linked User account (shared balance system)
+    const balance = moderator.userId ? moderator.userId.balance : 0;
+    const totalEarnings = moderator.userId ? moderator.userId.totalEarnings : 0;
+
     // Generate JWT token
     const token = jwt.sign(
       {
@@ -82,7 +86,9 @@ router.post('/login', loginLimiter, async (req, res) => {
         fullName: moderator.fullName,
         permissions: moderator.permissions,
         lastLogin: moderator.lastLogin,
-        profile: moderator.profile
+        profile: moderator.profile,
+        balance: balance,
+        totalEarnings: totalEarnings
       }
     });
 
@@ -109,11 +115,18 @@ router.get('/profile', async (req, res) => {
       return res.status(403).json({ error: 'Moderator access required' });
     }
 
-    // Get moderator details
-    const moderator = await Moderator.findById(decoded.moderatorId).select('-password');
+    // Get moderator details and populate linked User account for balance
+    const moderator = await Moderator.findById(decoded.moderatorId)
+      .select('-password')
+      .populate('userId', 'balance totalEarnings');
+
     if (!moderator) {
       return res.status(404).json({ error: 'Moderator not found' });
     }
+
+    // Get balance from linked User account (shared balance system)
+    const balance = moderator.userId ? moderator.userId.balance : 0;
+    const totalEarnings = moderator.userId ? moderator.userId.totalEarnings : 0;
 
     res.json({
       moderator: {
@@ -125,7 +138,9 @@ router.get('/profile', async (req, res) => {
         permissions: moderator.permissions,
         lastLogin: moderator.lastLogin,
         profile: moderator.profile,
-        stats: moderator.stats
+        stats: moderator.stats,
+        balance: balance,
+        totalEarnings: totalEarnings
       }
     });
 

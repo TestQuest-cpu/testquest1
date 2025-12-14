@@ -57,6 +57,11 @@ const moderatorSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false
+  },
   role: {
     type: String,
     default: 'moderator',
@@ -551,7 +556,9 @@ const authenticateModerator = async (req) => {
   }
 
   const { Moderator } = await connectToDatabase();
-  const moderator = await Moderator.findById(decoded.moderatorId).select('-password');
+  const moderator = await Moderator.findById(decoded.moderatorId)
+    .select('-password')
+    .populate('userId', 'balance totalEarnings');
 
   if (!moderator || moderator.status !== 'active') {
     throw new Error('Invalid or inactive moderator account');
@@ -659,7 +666,7 @@ const handler = async (req, res) => {
           permissions: moderator.permissions,
           lastLogin: moderator.lastLogin,
           profile: moderator.profile,
-          balance: moderator.balance || 0
+          balance: moderator.userId ? moderator.userId.balance : 0
         }
       });
     }
@@ -679,7 +686,7 @@ const handler = async (req, res) => {
             username: moderator.username,
             role: moderator.role,
             permissions: moderator.permissions,
-            balance: moderator.balance || 0
+            balance: moderator.userId ? moderator.userId.balance : 0
           }
         });
       } catch (error) {
@@ -960,42 +967,62 @@ const handler = async (req, res) => {
 
       await dispute.save();
 
-      // ALWAYS update moderator balance when resolving
+      // Update linked User account balance when resolving (shared balance system)
       console.log('🔍 Checking moderator credit update:', {
         action,
         disputeStatus: dispute.status,
         moderatorId: moderator._id,
-        currentBalance: moderator.balance
+        linkedUserId: moderator.userId
       });
 
-      let updatedModeratorBalance = moderator.balance || 0;
+      let updatedUserBalance = 0;
       if (action === 'resolve' && dispute.status === 'resolved') {
-        console.log('✅ Updating moderator balance with $inc operation...');
+        console.log('✅ Updating linked User account balance...');
 
-        // First ensure the moderator has a balance field (initialize if missing)
-        if (moderator.balance === undefined || moderator.balance === null) {
-          await Moderator.findByIdAndUpdate(moderator._id, { balance: 0 });
-          console.log('Initialized balance field to 0');
+        // Populate the moderator's userId to get the linked User account
+        await moderator.populate('userId');
+
+        if (moderator.userId) {
+          const linkedUser = await User.findById(moderator.userId);
+
+          if (linkedUser) {
+            // Update the linked User's balance
+            const updatedUser = await User.findByIdAndUpdate(
+              linkedUser._id,
+              {
+                $inc: {
+                  balance: 100,
+                  totalEarnings: 100
+                }
+              },
+              { new: true }
+            );
+
+            updatedUserBalance = updatedUser.balance;
+
+            console.log('💰 Linked User balance updated!', {
+              userId: linkedUser._id,
+              oldBalance: linkedUser.balance,
+              newBalance: updatedUser.balance,
+              increment: 100
+            });
+          } else {
+            console.log('⚠️ Linked User not found');
+          }
+        } else {
+          console.log('⚠️ Moderator has no linked User account');
         }
 
-        // Use atomic update to ensure the balance is incremented correctly
-        const updatedModerator = await Moderator.findByIdAndUpdate(
+        // Update moderator stats
+        await Moderator.findByIdAndUpdate(
           moderator._id,
           {
             $inc: {
-              balance: 100,
               'stats.resolvedDisputes': 1,
               'stats.totalDisputes': 1
             }
-          },
-          { new: true }
+          }
         );
-        updatedModeratorBalance = updatedModerator.balance;
-        console.log('💰 Moderator balance updated!', {
-          oldBalance: moderator.balance,
-          newBalance: updatedModerator.balance,
-          increment: 100
-        });
       } else {
         console.log('❌ Not updating balance - condition not met');
       }
@@ -1006,7 +1033,7 @@ const handler = async (req, res) => {
         bugReportUpdated,
         rewardGranted,
         rewardAmount,
-        moderatorBalance: updatedModeratorBalance
+        moderatorBalance: updatedUserBalance
       });
     }
 
