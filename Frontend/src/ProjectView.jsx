@@ -175,6 +175,8 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
         requestBody.ratingComment = ratingComment;
       }
 
+      console.log('Submitting bug report action:', requestBody);
+
       const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/bug-reports`, {
         method: 'PUT',
         headers: {
@@ -185,6 +187,7 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
       });
 
       const data = await response.json();
+      console.log('Bug report action response:', response.status, data);
 
       if (response.ok) {
         // Update the project's remaining bounty if this was an approval
@@ -211,20 +214,29 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
     }
   };
 
-  const filteredReports = bugReports.filter(report => {
-    // If "approved" filter is selected, only show approved reports
-    if (filter === 'approved') {
-      return report.status === 'approved';
-    }
+  const filteredReports = bugReports
+    .filter(report => {
+      // If "approved" filter is selected, only show approved reports
+      if (filter === 'approved') {
+        return report.status === 'approved';
+      }
 
-    // For severity filters, exclude approved reports (they have their own tab)
-    const notApproved = report.status !== 'approved';
+      // For severity filters, exclude approved reports (they have their own tab)
+      const notApproved = report.status !== 'approved';
 
-    // Filter by severity
-    const severityMatch = severityFilter === 'all' || report.severity === severityFilter;
+      // Filter by severity
+      const severityMatch = severityFilter === 'all' || report.severity === severityFilter;
 
-    return notApproved && severityMatch;
-  });
+      return notApproved && severityMatch;
+    })
+    .sort((a, b) => {
+      // When viewing approved bugs, sort by newest first
+      if (filter === 'approved') {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      // For pending/rejected/resolved, keep original order (oldest first for FCFS)
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
 
   if (!project) {
     return (
@@ -1686,6 +1698,36 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '12px' }}>
               <button
+                onClick={() => {
+                  setShowRatingModal(false);
+                  setRating(0);
+                  setRatingComment('');
+                  setPendingAction(null);
+                }}
+                style={{
+                  flex: 1,
+                  background: isLightMode ? '#E5E7EB' : 'rgba(255, 255, 255, 0.1)',
+                  border: isLightMode ? '1px solid #D1D5DB' : '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  color: isLightMode ? '#374151' : 'white',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.background = isLightMode ? '#D1D5DB' : 'rgba(255, 255, 255, 0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.background = isLightMode ? '#E5E7EB' : 'rgba(255, 255, 255, 0.1)';
+                }}
+              >
+                Cancel
+              </button>
+              <button
                 onClick={submitActionWithRating}
                 style={{
                   flex: 1,
@@ -1703,30 +1745,6 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
                 {pendingAction === 'approve' ? 'Approve & Rate' : 'Reject & Rate'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowRatingModal(false);
-                  setRating(0);
-                  setRatingComment('');
-                  setPendingAction(null);
-                }}
-                style={{
-                  flex: 1,
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '8px',
-                  padding: '12px',
-                  color: 'white',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-              >
-                Cancel
               </button>
             </div>
           </div>
