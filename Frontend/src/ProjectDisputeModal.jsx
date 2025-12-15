@@ -38,7 +38,7 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/bug-reports?projectId=${project._id}`,
+          `${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/bug-reports?myReports=true&projectId=${project._id}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -244,6 +244,7 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
               value={formData.bugReportId}
               onChange={handleInputChange}
               disabled={loadingBugReports}
+              size="1"
               style={{
                 width: '100%',
                 backgroundColor: theme.statsCardBg,
@@ -253,7 +254,9 @@ function ProjectDisputeModal({ project, onClose, onSubmit }) {
                 color: theme.textPrimary,
                 fontSize: '0.95rem',
                 cursor: loadingBugReports ? 'wait' : 'pointer',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                maxHeight: '200px',
+                overflowY: 'auto'
               }}
             >
               <option value="">
