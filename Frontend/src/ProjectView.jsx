@@ -8,7 +8,7 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
   const [error, setError] = useState('');
   const [selectedReport, setSelectedReport] = useState(null);
   const [filter, setFilter] = useState('all');
-  const [severityFilter, setSeverityFilter] = useState('all');
+  const [severityFilter, setSeverityFilter] = useState('critical');
   const [processingAction, setProcessingAction] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
@@ -858,7 +858,6 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                 Severity:
               </span>
               {[
-                { key: 'all', label: 'All', color: '#667eea', count: bugReports.filter(r => r.status !== 'approved').length },
                 { key: 'critical', label: 'Critical', color: '#EF4444', count: bugReports.filter(r => r.severity === 'critical' && r.status !== 'approved').length },
                 { key: 'major', label: 'Major', color: '#F59E0B', count: bugReports.filter(r => r.severity === 'major' && r.status !== 'approved').length },
                 { key: 'minor', label: 'Minor', color: '#3B82F6', count: bugReports.filter(r => r.severity === 'minor' && r.status !== 'approved').length }
