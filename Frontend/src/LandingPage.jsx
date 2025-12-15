@@ -64,63 +64,6 @@ function LandingPage({ onDeveloperLogin, onTesterLogin }) {
         }}>
           TESTQUEST
         </h1>
-
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <button
-            onClick={onDeveloperLogin}
-            style={{
-              padding: '12px 30px',
-              backgroundColor: '#7C3AED',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '1rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 4px 15px rgba(124, 58, 237, 0.4)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#6B2FD6';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 6px 20px rgba(124, 58, 237, 0.5)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#7C3AED';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 4px 15px rgba(124, 58, 237, 0.4)';
-            }}
-          >
-            Sign in as Developer
-          </button>
-          <button
-            onClick={onTesterLogin}
-            style={{
-              padding: '12px 30px',
-              backgroundColor: '#00D4FF',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '1rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 4px 15px rgba(0, 212, 255, 0.4)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#00B8E6';
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 6px 20px rgba(0, 212, 255, 0.5)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#00D4FF';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 4px 15px rgba(0, 212, 255, 0.4)';
-            }}
-          >
-            Sign in as Tester
-          </button>
-        </div>
       </nav>
 
       {/* Hero Section */}
