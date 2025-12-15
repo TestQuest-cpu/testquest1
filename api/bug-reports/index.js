@@ -853,11 +853,16 @@ const handler = async (req, res) => {
               // Only grant if there's a positive difference
               if (project.remainingBounty >= rewardDifference) {
                 // Deduct from project's remaining bounty (only the difference)
+                console.log('Moderator override - Before deduction, remainingBounty:', project.remainingBounty);
                 project.remainingBounty -= rewardDifference;
+                console.log('Moderator override - After deduction, remainingBounty:', project.remainingBounty);
 
                 // Add to tester's balance and totalEarnings (only the difference)
-                tester.balance += rewardDifference;
-                tester.totalEarnings += rewardDifference;
+                console.log('Moderator override - Before payment, tester balance:', tester.balance);
+                tester.balance = (tester.balance || 0) + rewardDifference;
+                tester.totalEarnings = (tester.totalEarnings || 0) + rewardDifference;
+                tester.totalCreditsAcquired = (tester.totalCreditsAcquired || 0) + rewardDifference;
+                console.log('Moderator override - After payment, tester balance:', tester.balance, 'totalEarnings:', tester.totalEarnings, 'totalCreditsAcquired:', tester.totalCreditsAcquired, 'rewardDifference:', rewardDifference);
 
                 // Update bug report reward to new total amount
                 bugReport.reward = {
