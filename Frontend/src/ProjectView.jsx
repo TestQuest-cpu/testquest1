@@ -212,11 +212,18 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
   };
 
   const filteredReports = bugReports.filter(report => {
-    // Filter by status
-    const statusMatch = filter === 'all' || report.status === filter;
+    // If "approved" filter is selected, only show approved reports
+    if (filter === 'approved') {
+      return report.status === 'approved';
+    }
+
+    // For severity filters, exclude approved reports (they have their own tab)
+    const notApproved = report.status !== 'approved';
+
     // Filter by severity
     const severityMatch = severityFilter === 'all' || report.severity === severityFilter;
-    return statusMatch && severityMatch;
+
+    return notApproved && severityMatch;
   });
 
   if (!project) {
@@ -839,65 +846,6 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
               </h2>
             </div>
 
-            {/* Status Filter Tabs */}
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '15px' }}>
-              {[
-                { key: 'all', label: 'All Reports', count: bugReports.length },
-                { key: 'pending', label: 'Pending Review', count: bugReports.filter(r => r.status === 'pending').length },
-                { key: 'approved', label: 'Approved', count: bugReports.filter(r => r.status === 'approved').length },
-                { key: 'rejected', label: 'Rejected', count: bugReports.filter(r => r.status === 'rejected').length },
-                { key: 'resolved', label: 'Resolved', count: bugReports.filter(r => r.status === 'resolved').length }
-              ].map(tab => (
-                <button
-                  key={tab.key}
-                  onClick={() => setFilter(tab.key)}
-                  style={{
-                    background: filter === tab.key
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                      : theme.buttonLight,
-                    color: theme.textPrimary,
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    boxShadow: filter === tab.key ? '0 4px 15px rgba(102, 126, 234, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.2)',
-                    fontFamily: 'DM Sans, sans-serif'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (filter !== tab.key) {
-                      e.target.style.background = theme.buttonLightHover;
-                      e.target.style.transform = 'translateY(-2px)';
-                      e.target.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (filter !== tab.key) {
-                      e.target.style.background = theme.buttonLight;
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
-                    }
-                  }}
-                >
-                  {tab.label}
-                  <span style={{
-                    background: filter === tab.key ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
-                    borderRadius: '10px',
-                    padding: '2px 6px',
-                    fontSize: '11px',
-                    fontWeight: '600'
-                  }}>
-                    {tab.count}
-                  </span>
-                </button>
-              ))}
-            </div>
-
             {/* Severity Filter */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
               <span style={{
@@ -910,20 +858,23 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                 Severity:
               </span>
               {[
-                { key: 'all', label: 'All', color: '#667eea', count: bugReports.length },
-                { key: 'critical', label: 'Critical', color: '#EF4444', count: bugReports.filter(r => r.severity === 'critical').length },
-                { key: 'major', label: 'Major', color: '#F59E0B', count: bugReports.filter(r => r.severity === 'major').length },
-                { key: 'minor', label: 'Minor', color: '#3B82F6', count: bugReports.filter(r => r.severity === 'minor').length }
+                { key: 'all', label: 'All', color: '#667eea', count: bugReports.filter(r => r.status !== 'approved').length },
+                { key: 'critical', label: 'Critical', color: '#EF4444', count: bugReports.filter(r => r.severity === 'critical' && r.status !== 'approved').length },
+                { key: 'major', label: 'Major', color: '#F59E0B', count: bugReports.filter(r => r.severity === 'major' && r.status !== 'approved').length },
+                { key: 'minor', label: 'Minor', color: '#3B82F6', count: bugReports.filter(r => r.severity === 'minor' && r.status !== 'approved').length }
               ].map(sev => (
                 <button
                   key={sev.key}
-                  onClick={() => setSeverityFilter(sev.key)}
+                  onClick={() => {
+                    setSeverityFilter(sev.key);
+                    setFilter('all'); // Reset filter from 'approved' when selecting severity
+                  }}
                   style={{
-                    background: severityFilter === sev.key
+                    background: (severityFilter === sev.key && filter !== 'approved')
                       ? sev.color
                       : theme.buttonLight,
-                    color: severityFilter === sev.key ? 'white' : theme.textPrimary,
-                    border: severityFilter === sev.key ? 'none' : `1px solid ${theme.border}`,
+                    color: (severityFilter === sev.key && filter !== 'approved') ? 'white' : theme.textPrimary,
+                    border: (severityFilter === sev.key && filter !== 'approved') ? 'none' : `1px solid ${theme.border}`,
                     padding: '6px 14px',
                     borderRadius: '6px',
                     cursor: 'pointer',
@@ -936,13 +887,13 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                     fontFamily: 'DM Sans, sans-serif'
                   }}
                   onMouseEnter={(e) => {
-                    if (severityFilter !== sev.key) {
+                    if (severityFilter !== sev.key || filter === 'approved') {
                       e.target.style.background = theme.buttonLightHover;
                       e.target.style.transform = 'translateY(-1px)';
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (severityFilter !== sev.key) {
+                    if (severityFilter !== sev.key || filter === 'approved') {
                       e.target.style.background = theme.buttonLight;
                       e.target.style.transform = 'translateY(0)';
                     }
@@ -950,7 +901,7 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                 >
                   {sev.label}
                   <span style={{
-                    background: severityFilter === sev.key ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+                    background: (severityFilter === sev.key && filter !== 'approved') ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
                     borderRadius: '8px',
                     padding: '1px 5px',
                     fontSize: '11px'
@@ -959,6 +910,58 @@ function ProjectView({ project, onBack, onLeaderboards, onPost, onProfile }) {
                   </span>
                 </button>
               ))}
+
+              {/* Separator */}
+              <div style={{
+                width: '1px',
+                height: '24px',
+                backgroundColor: theme.border,
+                margin: '0 5px'
+              }}></div>
+
+              {/* Approved Button */}
+              <button
+                onClick={() => setFilter('approved')}
+                style={{
+                  background: filter === 'approved'
+                    ? '#10B981'
+                    : theme.buttonLight,
+                  color: filter === 'approved' ? 'white' : theme.textPrimary,
+                  border: filter === 'approved' ? 'none' : `1px solid ${theme.border}`,
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  fontFamily: 'DM Sans, sans-serif'
+                }}
+                onMouseEnter={(e) => {
+                  if (filter !== 'approved') {
+                    e.target.style.background = theme.buttonLightHover;
+                    e.target.style.transform = 'translateY(-1px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (filter !== 'approved') {
+                    e.target.style.background = theme.buttonLight;
+                    e.target.style.transform = 'translateY(0)';
+                  }
+                }}
+              >
+                Approved
+                <span style={{
+                  background: filter === 'approved' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+                  borderRadius: '8px',
+                  padding: '1px 5px',
+                  fontSize: '11px'
+                }}>
+                  {bugReports.filter(r => r.status === 'approved').length}
+                </span>
+              </button>
             </div>
           </div>
 
