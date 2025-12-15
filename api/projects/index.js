@@ -602,7 +602,7 @@ module.exports = async (req, res) => {
 
     } else if (req.method === 'GET') {
       // Check if this is a specific project request (has 'id' parameter)
-      const { id, leaderboards, status, page = 1, limit = 10, myProjects, search, platform, minBudget, maxBudget } = req.query;
+      const { id, leaderboards, status, page = 1, limit = 100, myProjects, search, platform, minBudget, maxBudget } = req.query;
 
       // Handle myProjects query parameter
       if (myProjects === 'true') {
