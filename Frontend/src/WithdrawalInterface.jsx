@@ -106,13 +106,13 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { bg: '#FEF3C7', color: '#92400E', text: 'Pending', icon: '⏳' },
-      processing: { bg: '#E0E7FF', color: '#3730A3', text: 'Processing', icon: '⚙️' },
-      completed: { bg: '#D1FAE5', color: '#065F46', text: 'Completed', icon: '✅' },
-      failed: { bg: '#FEE2E2', color: '#991B1B', text: 'Failed', icon: '❌' }
+      pending: { bg: '#FEF3C7', color: '#92400E', text: 'Pending' },
+      processing: { bg: '#E0E7FF', color: '#3730A3', text: 'Processing' },
+      completed: { bg: '#D1FAE5', color: '#065F46', text: 'Completed' },
+      failed: { bg: '#FEE2E2', color: '#991B1B', text: 'Failed' }
     };
     const config = statusConfig[status] || statusConfig.pending;
-    
+
     return (
       <span style={{
         backgroundColor: config.bg,
@@ -125,7 +125,6 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
         alignItems: 'center',
         gap: '4px'
       }}>
-        <span>{config.icon}</span>
         {config.text}
       </span>
     );
@@ -266,7 +265,7 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
               }
             }}
           >
-            💰 Request Withdrawal
+            Request Withdrawal
           </button>
           <button
             onClick={() => setActiveTab('history')}
@@ -300,7 +299,7 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
               }
             }}
           >
-            📋 Withdrawal History
+            Withdrawal History
           </button>
         </div>
 
@@ -416,7 +415,7 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
                     lineHeight: '1.4',
                     fontFamily: 'DM Sans, sans-serif'
                   }}>
-                    💡 <strong>Processing Time:</strong> Withdrawals are typically processed within 1-2 business days. 
+                    <strong>Processing Time:</strong> Withdrawals are typically processed within 1-2 business days.
                     You'll receive the funds directly to your PayPal account.
                   </p>
                 </div>
@@ -431,7 +430,7 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
                     color: '#FF6B6B',
                     fontSize: '14px'
                   }}>
-                    ⚠️ {error}
+                    {error}
                   </div>
                 )}
 
@@ -445,7 +444,7 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
                     color: '#4ECDC4',
                     fontSize: '14px'
                   }}>
-                    ✅ {success}
+                    {success}
                   </div>
                 )}
 
@@ -519,7 +518,6 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
                   color: theme.textSecondary,
                   transition: 'color 0.3s ease'
                 }}>
-                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>💳</div>
                   <h3 style={{ color: theme.textPrimary, marginBottom: '8px', fontFamily: 'Sansita, sans-serif', transition: 'color 0.3s ease' }}>No Withdrawals Yet</h3>
                   <p style={{ fontFamily: 'DM Sans, sans-serif' }}>Your withdrawal history will appear here once you make your first request.</p>
                 </div>
@@ -587,7 +585,58 @@ const WithdrawalInterface = ({ userBalance, onClose }) => {
                         {withdrawal.completedAt && (
                           <span> • Completed: {formatDate(withdrawal.completedAt)}</span>
                         )}
+                        {withdrawal.rejectedAt && (
+                          <span> • Rejected: {formatDate(withdrawal.rejectedAt)}</span>
+                        )}
                       </div>
+
+                      {/* Admin Notes / Rejection Reason / Failure Reason */}
+                      {(withdrawal.adminNotes || withdrawal.rejectionReason || withdrawal.failureReason) && (
+                        <div style={{
+                          marginTop: '10px',
+                          padding: '10px',
+                          backgroundColor: withdrawal.status === 'rejected' || withdrawal.status === 'failed'
+                            ? 'rgba(239, 68, 68, 0.1)'
+                            : withdrawal.status === 'completed'
+                            ? 'rgba(16, 185, 129, 0.1)'
+                            : 'rgba(234, 179, 8, 0.1)',
+                          border: `1px solid ${
+                            withdrawal.status === 'rejected' || withdrawal.status === 'failed'
+                              ? 'rgba(239, 68, 68, 0.3)'
+                              : withdrawal.status === 'completed'
+                              ? 'rgba(16, 185, 129, 0.3)'
+                              : 'rgba(234, 179, 8, 0.3)'
+                          }`,
+                          borderRadius: '6px'
+                        }}>
+                          <div style={{
+                            color: withdrawal.status === 'rejected' || withdrawal.status === 'failed'
+                              ? '#EF4444'
+                              : withdrawal.status === 'completed'
+                              ? '#10B981'
+                              : '#EAB308',
+                            fontSize: '11px',
+                            fontWeight: '600',
+                            marginBottom: '4px',
+                            fontFamily: 'DM Sans, sans-serif'
+                          }}>
+                            {withdrawal.status === 'rejected'
+                              ? 'Rejection Reason:'
+                              : withdrawal.status === 'failed'
+                              ? 'Failure Reason:'
+                              : 'Admin Notes:'}
+                          </div>
+                          <div style={{
+                            color: theme.textSecondary,
+                            fontSize: '12px',
+                            lineHeight: '1.4',
+                            fontFamily: 'DM Sans, sans-serif',
+                            transition: 'color 0.3s ease'
+                          }}>
+                            {withdrawal.failureReason || withdrawal.rejectionReason || withdrawal.adminNotes}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
