@@ -273,8 +273,19 @@ const withdrawalSchema = new mongoose.Schema({
   failureReason: { type: String }
 }, { timestamps: true });
 
+// Moderator model
+const moderatorSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  password: { type: String, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+  role: { type: String, default: 'moderator', enum: ['moderator', 'senior_moderator', 'head_moderator'] },
+  status: { type: String, enum: ['active', 'suspended', 'inactive'], default: 'active' },
+  balance: { type: Number, default: 0 }
+}, { timestamps: true });
+
 // Create models only once
-let User, Project, Withdrawal;
+let User, Project, Withdrawal, Moderator;
 
 function getModels() {
   if (!User) {
@@ -286,7 +297,10 @@ function getModels() {
   if (!Withdrawal) {
     Withdrawal = mongoose.models.Withdrawal || mongoose.model('Withdrawal', withdrawalSchema);
   }
-  return { User, Project, Withdrawal, TempProject };
+  if (!Moderator) {
+    Moderator = mongoose.models.Moderator || mongoose.model('Moderator', moderatorSchema);
+  }
+  return { User, Project, Withdrawal, TempProject, Moderator };
 }
 
 async function connectToDatabase() {
@@ -327,9 +341,43 @@ const authenticateToken = async (req) => {
   }
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const { User } = await connectToDatabase();
+  const { User, Moderator } = await connectToDatabase();
+
+  console.log('Payment API - Token decoded:', { type: decoded.type, moderatorId: decoded.moderatorId, userId: decoded.userId });
+
+  // Check if this is a moderator token
+  if (decoded.type === 'moderator' && decoded.moderatorId) {
+    console.log('Payment API - Authenticating moderator:', decoded.moderatorId);
+    const moderator = await Moderator.findById(decoded.moderatorId).populate('userId');
+
+    if (!moderator) {
+      console.error('Payment API - Moderator not found:', decoded.moderatorId);
+      throw new Error('Invalid token - moderator not found');
+    }
+
+    console.log('Payment API - Moderator found, linked userId:', moderator.userId?._id);
+
+    if (!moderator.userId) {
+      throw new Error('Moderator account not linked to a user account');
+    }
+
+    // Return the linked User account for withdrawal purposes
+    const user = await User.findById(moderator.userId._id).select('-password');
+    if (!user) {
+      console.error('Payment API - Linked user not found:', moderator.userId._id);
+      throw new Error('Invalid token - linked user account not found');
+    }
+
+    console.log('Payment API - Moderator authenticated successfully, balance:', user.balance);
+
+    // Set accountType to tester so they can make withdrawals
+    user.accountType = 'tester';
+    return user;
+  }
+
+  // Regular user token
   const user = await User.findById(decoded.userId).select('-password');
-  
+
   if (!user) {
     throw new Error('Invalid token - user not found');
   }
@@ -403,7 +451,7 @@ module.exports = async (req, res) => {
       }
     }
 
-    const { User, Project, Withdrawal, TempProject } = await connectToDatabase();
+    const { User, Project, Withdrawal, TempProject, Moderator } = await connectToDatabase();
     console.log('PayPal API: Database connected successfully');
 
     const paypalClient = createPayPalClient();
