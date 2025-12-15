@@ -612,7 +612,45 @@ module.exports = async (req, res) => {
           return res.status(403).json({ message: 'Developer account required' });
         }
 
-        const projects = await Project.find({ postedBy: user._id })
+        // Build filter for user's projects
+        let filter = { postedBy: user._id };
+
+        // Search by name
+        if (search) {
+          filter.name = { $regex: search, $options: 'i' };
+        }
+
+        // Filter by platform
+        if (platform) {
+          filter.platform = { $regex: platform, $options: 'i' };
+        }
+
+        // Filter by budget range
+        if (minBudget || maxBudget) {
+          const budgetConditions = [];
+
+          if (minBudget && maxBudget) {
+            budgetConditions.push({ totalBudget: { $gte: parseFloat(minBudget), $lte: parseFloat(maxBudget) } });
+            budgetConditions.push({ totalBounty: { $gte: parseFloat(minBudget), $lte: parseFloat(maxBudget) } });
+          } else if (minBudget) {
+            budgetConditions.push({ totalBudget: { $gte: parseFloat(minBudget) } });
+            budgetConditions.push({ totalBounty: { $gte: parseFloat(minBudget) } });
+          } else if (maxBudget) {
+            budgetConditions.push({ totalBudget: { $lte: parseFloat(maxBudget) } });
+            budgetConditions.push({ totalBounty: { $lte: parseFloat(maxBudget) } });
+          }
+
+          // Combine with existing filters
+          const existingFilters = { ...filter };
+          filter = {
+            $and: [
+              existingFilters,
+              { $or: budgetConditions }
+            ]
+          };
+        }
+
+        const projects = await Project.find(filter)
           .populate('postedBy', 'name email avatar')
           .sort({ createdAt: -1 });
 

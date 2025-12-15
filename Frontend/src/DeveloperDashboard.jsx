@@ -6,6 +6,10 @@ function DeveloperDashboard({ onPost, onProjectClick, onProfile, onLeaderboards 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [platform, setPlatform] = useState('');
+  const [minBudget, setMinBudget] = useState('');
+  const [maxBudget, setMaxBudget] = useState('');
   const [isLightMode, setIsLightMode] = useState(localStorage.getItem('developerLightMode') === 'true');
 
   const theme = getDeveloperTheme(isLightMode);
@@ -21,6 +25,10 @@ function DeveloperDashboard({ onPost, onProjectClick, onProfile, onLeaderboards 
     return () => window.removeEventListener('themeChange', handleThemeChange);
   }, []);
 
+  useEffect(() => {
+    fetchMyProjects();
+  }, [search, platform, minBudget, maxBudget]);
+
   const fetchMyProjects = async () => {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -31,7 +39,13 @@ function DeveloperDashboard({ onPost, onProjectClick, onProfile, onLeaderboards 
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/projects?myProjects=true`, {
+      const params = new URLSearchParams({ myProjects: 'true' });
+      if (search) params.append('search', search);
+      if (platform) params.append('platform', platform);
+      if (minBudget) params.append('minBudget', minBudget);
+      if (maxBudget) params.append('maxBudget', maxBudget);
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')}/api/projects?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -270,6 +284,84 @@ function DeveloperDashboard({ onPost, onProjectClick, onProfile, onLeaderboards 
               <div style={{ color: theme.textSecondary, fontSize: '0.9rem', fontFamily: 'DM Sans, sans-serif', transition: 'color 0.3s ease' }}>Approved</div>
             </div>
           </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div style={{
+          background: theme.cardBackground,
+          borderRadius: '12px',
+          border: `1px solid ${theme.border}`,
+          padding: '20px',
+          marginBottom: '20px',
+          display: 'grid',
+          gridTemplateColumns: '2fr 1fr 1fr 1fr',
+          gap: '15px',
+          transition: 'all 0.3s ease'
+        }}>
+          <input
+            type="text"
+            placeholder="Search by project name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              background: theme.background,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '8px',
+              padding: '10px 15px',
+              color: theme.textPrimary,
+              fontSize: '0.95rem',
+              outline: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          />
+          <input
+            type="text"
+            placeholder="Platform (e.g., web)"
+            value={platform}
+            onChange={(e) => setPlatform(e.target.value)}
+            style={{
+              background: theme.background,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '8px',
+              padding: '10px 15px',
+              color: theme.textPrimary,
+              fontSize: '0.95rem',
+              outline: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          />
+          <input
+            type="number"
+            placeholder="Min budget ($)"
+            value={minBudget}
+            onChange={(e) => setMinBudget(e.target.value)}
+            style={{
+              background: theme.background,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '8px',
+              padding: '10px 15px',
+              color: theme.textPrimary,
+              fontSize: '0.95rem',
+              outline: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          />
+          <input
+            type="number"
+            placeholder="Max budget ($)"
+            value={maxBudget}
+            onChange={(e) => setMaxBudget(e.target.value)}
+            style={{
+              background: theme.background,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '8px',
+              padding: '10px 15px',
+              color: theme.textPrimary,
+              fontSize: '0.95rem',
+              outline: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          />
         </div>
 
         {/* Filter Tabs */}
